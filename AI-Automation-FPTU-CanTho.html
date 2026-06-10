@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Automation Workflow — Trường ĐH FPT Cần Thơ</title>
+<style>
+:root{
+  --bg:#070a14;--bg2:#0b1020;--cyan:#35d0ee;--violet:#9b8cff;--purple:#a855f7;--pink:#f472b6;
+  --orange:#ff9a4d;--green:#42e8c0;--text:#eaf0fb;--muted:#8a9ac0;--faint:#5d6b8f;
+  --line:rgba(120,150,230,.16);--line2:rgba(120,150,230,.28);
+  --card:rgba(18,26,48,.55);--glass:rgba(12,18,38,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased;letter-spacing:.1px}
+#bg-canvas{position:fixed;inset:0;z-index:0;display:block;cursor:grab}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 42%,rgba(7,10,20,0) 30%,rgba(7,10,20,.55) 74%,rgba(7,10,20,.94) 100%);}
+
+#deck{position:relative;z-index:2;height:100vh;width:100vw;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+  padding:clamp(28px,5vw,90px);opacity:0;transform:translateY(24px) scale(.99);
+  transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1);overflow-y:auto;}
+.slide.active{display:flex;opacity:1;transform:none;}
+.slide.doc{justify-content:flex-start;padding-top:0;padding-bottom:84px;overflow:hidden;}
+.wrap{width:100%;max-width:1140px;margin:0 auto;}
+.slide.doc .wrap{flex:1;display:flex;flex-direction:column;min-height:0;}
+.sbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding-bottom:18px;}
+.sbody::-webkit-scrollbar{width:9px}.sbody::-webkit-scrollbar-thumb{background:rgba(120,150,230,.25);border-radius:6px}
+
+.shead{flex:0 0 auto;position:relative;z-index:2;padding-top:62px;padding-bottom:18px;background:var(--bg);}
+.shead h2{font-size:clamp(28px,4vw,50px);font-weight:800;text-shadow:0 2px 26px rgba(8,12,24,.9);}
+.shead h2 .grad,.shead h2 .grad-o{filter:drop-shadow(0 0 22px rgba(53,208,238,.28))}
+.shead h2 .grad-o{filter:drop-shadow(0 0 22px rgba(255,154,77,.3))}
+.shead:after{content:"";display:block;width:60px;height:4px;margin-top:16px;border-radius:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 16px rgba(53,208,238,.5)}
+.shead .kicker{margin-bottom:15px}
+
+.kicker{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;
+  padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--glass);}
+.kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+.kicker.p2{color:var(--violet)} .kicker.p2 .dot{background:var(--violet);box-shadow:0 0 10px var(--violet)}
+.kicker.p3{color:var(--orange)} .kicker.p3 .dot{background:var(--orange);box-shadow:0 0 10px var(--orange)}
+
+h1{font-size:clamp(34px,5.4vw,64px);line-height:1.06;font-weight:800;letter-spacing:-1.2px;}
+h2{font-size:clamp(24px,3.2vw,40px);line-height:1.14;font-weight:800;letter-spacing:-.6px;}
+h3{font-size:clamp(16px,1.6vw,20px);font-weight:700;letter-spacing:-.2px}
+.grad{background:linear-gradient(100deg,var(--cyan),var(--violet) 60%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.grad-o{background:linear-gradient(100deg,var(--orange),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.lead{font-size:clamp(15px,1.55vw,18px);color:var(--muted);line-height:1.65;max-width:760px;margin-top:14px;}
+p{line-height:1.6}.muted{color:var(--muted)}
+
+.grid{display:grid;gap:16px;margin-top:24px;}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
+  backdrop-filter:blur(10px);position:relative;overflow:hidden;transition:.3s}
+.card:hover{border-color:var(--line2);transform:translateY(-3px)}
+.card h3{margin-bottom:7px}.card p{font-size:14px;color:var(--muted);line-height:1.55}
+.bar{position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,var(--cyan),var(--violet))}
+.bar.or{background:linear-gradient(90deg,var(--orange),var(--pink))}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.6px;padding:5px 11px;border-radius:999px;margin-bottom:11px;border:1px solid var(--line);}
+.tag.cy{color:var(--cyan);background:rgba(53,208,238,.08)} .tag.or{color:var(--orange);background:rgba(255,154,77,.08)} .tag.gr{color:var(--green);background:rgba(66,232,192,.08)}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:22px;align-items:start}
+.caserow{display:grid;grid-template-columns:320px 1fr;gap:34px;align-items:start;margin-top:6px}
+.caserow .cside{position:sticky;top:0;align-self:start}
+
+ul.clean{list-style:none;margin-top:14px}
+ul.clean li{position:relative;padding-left:24px;margin-bottom:11px;font-size:15px;color:#cdd8f2;line-height:1.55}
+ul.clean li:before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;border-radius:2px;background:linear-gradient(135deg,var(--cyan),var(--violet));}
+ul.clean li b{color:#fff}
+
+/* spec card (case side) */
+.spec{background:linear-gradient(165deg,rgba(22,30,56,.72),rgba(11,16,34,.5));border:1px solid var(--line);
+  border-radius:20px;padding:26px;position:relative;overflow:hidden}
+.spec:before{content:"";position:absolute;top:-40%;right:-30%;width:80%;height:80%;border-radius:50%;
+  background:radial-gradient(circle,rgba(53,208,238,.16),transparent 70%);pointer-events:none}
+.spec.or:before{background:radial-gradient(circle,rgba(255,154,77,.16),transparent 70%)}
+.spec-ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;font-size:26px;
+  background:rgba(53,208,238,.1);border:1px solid var(--line2);margin-bottom:16px;box-shadow:0 0 24px rgba(53,208,238,.12)}
+.spec.or .spec-ic{background:rgba(255,154,77,.1);box-shadow:0 0 24px rgba(255,154,77,.12)}
+.spec .lead{margin-top:0;font-size:15px;color:#c8d3ee;max-width:none}
+
+.metric{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap}
+.metric .big{font-size:clamp(24px,3vw,34px);font-weight:800;line-height:1;letter-spacing:-1px}
+.metric .lbl{font-size:12px;color:var(--muted);margin-top:6px}
+.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pill{font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:var(--glass);color:#c8d3ee}
+.pill.small{font-size:11.5px;padding:5px 11px}
+.pill b{color:var(--cyan)}
+
+/* accordion */
+.acc{margin-top:8px;display:flex;flex-direction:column;gap:11px}
+.ai{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;backdrop-filter:blur(8px);transition:.25s}
+.ai:hover{border-color:var(--line2)} .ai.open{border-color:rgba(53,208,238,.5)} .ai.or.open{border-color:rgba(255,154,77,.5)}
+.ah{display:flex;align-items:center;gap:14px;padding:15px 17px;cursor:pointer;user-select:none;transition:background .2s}
+.ah:hover{background:rgba(255,255,255,.025)}
+.ah .num{flex:0 0 auto;width:29px;height:29px;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:800;color:#04101a;background:linear-gradient(135deg,var(--cyan),var(--green));}
+.ai.or .ah .num{background:linear-gradient(135deg,var(--orange),var(--pink));color:#190a04}
+.ah .ttl{flex:1;font-size:15.5px;font-weight:700}
+.ah .ttl small{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:3px;letter-spacing:.1px}
+.ah .chev{flex:0 0 auto;color:var(--faint);font-size:15px;transition:transform .3s}
+.ai.open .chev{transform:rotate(90deg);color:var(--cyan)} .ai.or.open .chev{color:var(--orange)}
+.ab{max-height:0;overflow:hidden;transition:max-height .45s ease}
+.ai.open .ab{max-height:2400px}
+.ab-in{padding:2px 19px 19px 60px;font-size:14px;color:#cdd8f2;line-height:1.65}
+.ab-in ul{list-style:none;margin:0}
+.ab-in li{position:relative;padding-left:18px;margin-bottom:8px}
+.ab-in li:before{content:"›";position:absolute;left:0;color:var(--cyan);font-weight:800}
+.ai.or .ab-in li:before{color:var(--orange)}
+.ab-in b{color:#fff}
+.ab-in .note{margin-top:12px;font-size:13px;color:var(--muted);border-left:2px solid var(--line2);padding-left:13px}
+.ab-in code{background:rgba(120,150,230,.13);padding:2px 7px;border-radius:6px;font-size:12.5px;color:#aee6ff;font-family:'SF Mono',Consolas,monospace}
+@media(max-width:880px){.ab-in{padding-left:19px}}
+
+.code{position:relative;background:#060a16;border:1px solid var(--line);border-radius:12px;margin-top:14px;overflow:hidden;font-family:'SF Mono',Consolas,monospace}
+.code .hd{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.code .hd .ttl{font-size:12px;font-weight:700;color:var(--cyan);letter-spacing:.4px} .code .hd .ttl.or{color:var(--orange)}
+.copy{background:rgba(53,208,238,.12);border:1px solid var(--line);color:var(--cyan);font-size:11.5px;font-weight:700;padding:6px 13px;border-radius:8px;cursor:pointer;transition:.2s;font-family:inherit}
+.copy:hover{background:rgba(53,208,238,.25)} .copy.done{color:var(--green);border-color:var(--green)}
+.code pre{padding:14px 16px;font-size:12.5px;line-height:1.65;color:#c7d4f0;white-space:pre-wrap;overflow-x:auto;max-height:42vh}
+.code pre .c{color:#5d6b8f}.code pre .k{color:var(--cyan)}.code pre .s{color:var(--green)}
+
+.shot{margin:13px 0 2px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0a1020;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.shot img{width:100%;display:block;max-height:56vh;object-fit:contain;background:#0a1020}
+.shot figcaption{font-size:12px;color:var(--muted);padding:8px 13px;border-top:1px solid var(--line)}
+
+/* ===== TOP BAR + MENU BUTTON ===== */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:12;display:flex;justify-content:space-between;align-items:center;
+  padding:13px 24px 18px;pointer-events:none;background:linear-gradient(180deg,rgba(7,10,20,.9),rgba(7,10,20,0));}
+#menuBtn{display:flex;align-items:center;gap:13px;pointer-events:auto;cursor:pointer;background:none;border:0;padding:7px 9px;border-radius:12px;transition:.2s}
+#menuBtn:hover{background:rgba(120,150,230,.1)}
+.mlines{display:flex;flex-direction:column;gap:4px}
+.mlines span{width:19px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+#menuBtn:hover .mlines span:nth-child(1){width:13px}#menuBtn:hover .mlines span:nth-child(3){width:13px}
+.fptlogo{height:32px;width:auto;display:block;filter:drop-shadow(0 0 10px rgba(255,154,77,.22))}
+.barlabel{font-size:11px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;pointer-events:none}
+#progress{position:fixed;top:0;left:0;height:3px;z-index:13;width:0%;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--orange));box-shadow:0 0 12px rgba(120,160,255,.6);transition:width .45s ease}
+
+/* ===== LEFT DRAWER MENU ===== */
+#overlay{position:fixed;inset:0;z-index:20;background:rgba(4,6,14,.55);opacity:0;visibility:hidden;transition:opacity .35s;backdrop-filter:blur(2px)}
+#overlay.show{opacity:1;visibility:visible}
+#menu{position:fixed;top:0;left:0;bottom:0;width:328px;max-width:85vw;z-index:25;
+  background:linear-gradient(180deg,rgba(11,16,32,.98),rgba(8,11,22,.98));border-right:1px solid var(--line2);
+  transform:translateX(-106%);transition:transform .42s cubic-bezier(.2,.85,.25,1);
+  backdrop-filter:blur(16px);display:flex;flex-direction:column;box-shadow:36px 0 80px rgba(0,0,0,.5)}
+#menu.open{transform:none}
+.menu-top{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+.menu-top .mt-l{display:flex;align-items:center;gap:11px}
+.menu-top .mt-l .ttl{font-size:13px;font-weight:700;line-height:1.2}.menu-top .mt-l .ttl span{display:block;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:500}
+#closeMenu{background:none;border:1px solid var(--line);color:var(--muted);width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:17px;transition:.2s}
+#closeMenu:hover{border-color:var(--cyan);color:var(--cyan)}
+#toc{overflow-y:auto;padding:12px 12px 34px;flex:1}
+.toc-g{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);margin:16px 13px 7px;font-weight:700}
+.toc-a{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;color:#c2cfee;font-size:14px;cursor:pointer;transition:.18s;border:1px solid transparent}
+.toc-a:hover{background:rgba(120,160,255,.09);color:#fff}
+.toc-a.active{background:linear-gradient(90deg,rgba(53,208,238,.16),rgba(53,208,238,.02));color:#fff;box-shadow:inset 2px 0 0 var(--cyan)}
+.toc-a .n{font-size:11px;color:var(--faint);min-width:24px;font-variant-numeric:tabular-nums;font-weight:700}
+.toc-a.active .n{color:var(--cyan)}
+
+/* bottom nav */
+#nav{position:fixed;bottom:0;left:0;right:0;z-index:12;display:flex;justify-content:space-between;align-items:center;padding:15px 24px;pointer-events:none;background:linear-gradient(0deg,rgba(7,10,20,.85),rgba(7,10,20,0));}
+.dots{display:flex;gap:7px;pointer-events:auto;flex-wrap:wrap;max-width:56vw}
+.dots .d{width:8px;height:8px;border-radius:50%;background:rgba(150,170,225,.22);cursor:pointer;transition:.25s}
+.dots .d.on{background:linear-gradient(135deg,var(--cyan),var(--violet));width:24px;border-radius:5px;box-shadow:0 0 12px rgba(120,160,255,.5)}
+.navbtns{display:flex;gap:10px;pointer-events:auto;align-items:center}
+.nbtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:var(--text);cursor:pointer;font-size:18px;backdrop-filter:blur(8px);transition:.2s;display:grid;place-items:center}
+.nbtn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 18px rgba(53,208,238,.22)}
+.counter{font-size:13px;color:var(--muted);min-width:52px;text-align:center;font-variant-numeric:tabular-nums}.counter b{color:var(--text)}
+.hint{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:12;font-size:12px;color:var(--muted);background:var(--glass);padding:6px 14px;border-radius:999px;border:1px solid var(--line);backdrop-filter:blur(8px);animation:fade 7s forwards 5s;pointer-events:none}
+@keyframes fade{to{opacity:0;visibility:hidden}}
+
+/* hero / dividers */
+.hero-title{font-size:clamp(40px,7.2vw,90px);line-height:1.0;letter-spacing:-2.5px;font-weight:800}
+.hero-title .grad{filter:drop-shadow(0 0 36px rgba(53,208,238,.4))}
+.hero-sub{margin-top:18px;font-size:clamp(18px,2.5vw,32px);font-weight:600;color:var(--text);letter-spacing:.2px}
+.hero-sub .fpt{color:var(--orange);font-weight:800}
+.author{margin-top:24px;font-size:14px;color:var(--muted);letter-spacing:.4px}
+.author span{display:inline-block;margin-left:4px;padding:4px 13px;border-radius:999px;font-weight:700;color:var(--text);
+  background:linear-gradient(90deg,rgba(53,208,238,.14),rgba(155,140,255,.14));border:1px solid var(--line)}
+.hero-sub:after{content:"";display:block;width:90px;height:3px;margin:18px auto 0;border-radius:3px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--orange));box-shadow:0 0 18px rgba(120,160,255,.45)}
+.herocard{margin:26px auto 0;max-width:640px;background:linear-gradient(165deg,rgba(22,30,56,.6),rgba(11,16,34,.4));
+  border:1px solid var(--line);border-radius:22px;padding:30px 34px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.herocard:before{content:"";position:absolute;top:-50%;left:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(53,208,238,.14),transparent 65%)}
+.bignum{font-size:clamp(80px,15vw,180px);font-weight:800;line-height:.8;letter-spacing:-6px;
+  background:linear-gradient(160deg,rgba(120,150,230,.35),rgba(120,150,230,.05));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+
+@media(max-width:880px){
+  .g3{grid-template-columns:1fr}.cols{grid-template-columns:1fr;gap:18px}
+  .caserow{grid-template-columns:1fr;gap:20px}
+  .caserow .cside{position:static;top:auto}
+  .dots{max-width:34vw}.slide{padding:70px 18px 88px}.slide.doc{padding-top:0}
+  .barlabel{display:none}
+}
+.slide.active .reveal{animation:rise .55s both}
+.slide.active .reveal:nth-child(2){animation-delay:.07s}
+.slide.active .reveal:nth-child(3){animation-delay:.14s}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="vignette"></div>
+<div id="progress"></div>
+
+<!-- top bar -->
+<div id="topbar">
+  <button id="menuBtn" aria-label="Mở menu">
+    <span class="mlines"><span></span><span></span><span></span></span>
+    <img class="fptlogo" src="assets/fptu_logo.png" alt="Trường Đại học FPT">
+  </button>
+  <div class="barlabel">AI Automation Workflow</div>
+</div>
+
+<!-- left drawer -->
+<div id="overlay"></div>
+<aside id="menu">
+  <div class="menu-top">
+    <div class="mt-l"><img class="fptlogo" src="assets/fptu_logo.png" alt="FPT"><div class="ttl">Mục lục<span>AI Automation</span></div></div>
+    <button id="closeMenu" aria-label="Đóng">×</button>
+  </div>
+  <nav id="toc"></nav>
+</aside>
+
+<div id="deck"></div>
+
+<div id="nav">
+  <div class="dots" id="dots"></div>
+  <div class="navbtns"><div class="counter"><b id="cur">1</b> / <span id="total">0</span></div>
+    <button class="nbtn" id="prev">‹</button><button class="nbtn" id="next">›</button></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+function acc(items,orange){
+  return '<div class="acc">'+items.map((it,i)=>
+    '<div class="ai'+(orange?' or':'')+'"><div class="ah"><span class="num">'+(i+1)+'</span>'+
+    '<span class="ttl">'+it.t+(it.s?'<small>'+it.s+'</small>':'')+'</span><span class="chev">›</span></div>'+
+    '<div class="ab"><div class="ab-in">'+it.b+'</div></div></div>').join('')+'</div>';
+}
+function code(title,body,orange){
+  return '<div class="code"><div class="hd"><span class="ttl'+(orange?' or':'')+'">'+title+'</span><button class="copy">Copy</button></div><pre>'+body+'</pre></div>';
+}
+function shot(src,cap){return '<figure class="shot"><img loading="lazy" src="assets/'+src+'" alt="'+cap+'"><figcaption>'+cap+'</figcaption></figure>';}
+function spec(o){
+  return '<div class="spec'+(o.or?' or':'')+'"><div class="spec-ic">'+o.ic+'</div><p class="lead">'+o.lead+'</p>'+
+    '<div class="metric">'+o.m.map(x=>'<div><div class="big '+(o.or?'grad-o':'grad')+'">'+x[0]+'</div><div class="lbl">'+x[1]+'</div></div>').join('')+'</div>'+
+    (o.tags?'<div class="pillrow">'+o.tags.map(t=>'<span class="pill small">'+t+'</span>').join('')+'</div>':'')+'</div>';
+}
+
+const slides = [
+
+/* 0 TITLE */
+`<div class="wrap" style="text-align:center">
+  <div class="kicker reveal" style="margin-inline:auto"><span class="dot"></span>AI Automation Workflow · 2026</div>
+  <h1 class="hero-title reveal">Tự động hoá công việc<br>bằng <span class="grad">AI</span></h1>
+  <div class="hero-sub reveal">tại Trường Đại học <span class="fpt">FPT</span> Cần Thơ</div>
+  <div class="herocard reveal">
+    <p class="lead" style="margin:0 auto;text-align:center;color:#c8d3ee">Hai hướng đi thực tế: <b style="color:#fff">(1)</b> dùng ngay công cụ có sẵn — Claude Cowork, Antigravity, Codex; <b style="color:#fff">(2)</b> tạo công cụ / skill / agent mới cho việc lặp lại.</p>
+    <div class="pillrow" style="justify-content:center;margin-top:20px">
+      <div class="pill">✉️ Lọc email</div><div class="pill">🎪 Tổ chức sự kiện</div><div class="pill">📰 Bản tin AI</div>
+      <div class="pill">📤 Email DVSV</div><div class="pill">📝 Biên bản họp</div><div class="pill">📅 Nhắc coi thi</div>
+    </div>
+  </div>
+  <div class="author reveal">Thực hiện bởi <span>@PhucLB3</span></div>
+</div>`,
+
+/* 1 TWO APPROACHES */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Tổng quan</div><h2>Hai hướng tự động hoá</h2></div>
+  <p class="lead reveal">Chọn hướng theo độ phức tạp & tần suất của công việc. Bấm từng thẻ để xem khi nào nên dùng.</p>
+  <div class="cols reveal">
+    <div>${acc([
+      {t:'Hướng 1 — Dùng công cụ có sẵn + tạo skill',s:'Không cần lập trình · triển khai trong giờ',b:'<ul><li>Giao việc cho agent qua <b>câu lệnh (prompt)</b> trong <b>Claude Cowork</b> rồi kiểm tra kết quả.</li><li>Mở rộng nhanh bằng cách <b>tạo skill</b> — mô tả bằng ngôn ngữ tự nhiên, <b>không tự viết code</b>.</li><li>Có <b>scheduled task</b> để chạy tự động theo lịch.</li><li>AI dừng ở mức <b>tạo nháp / đề xuất</b>, người duyệt rồi mới gửi.</li></ul><div class="note">4 case study Phần 1 và việc tạo skill đều thuộc hướng này.</div>'}
+    ])}</div>
+    <div>${acc([
+      {t:'Hướng 2 — Tự xây công cụ (vibecode)',s:'Viết công cụ thật bằng Python / npm',b:'<ul><li>"Vibecode": <b>mô tả ý tưởng → AI sinh ra mã nguồn</b> Python / npm hoàn chỉnh.</li><li>Công cụ: <b>Antigravity</b> (IDE agentic) · <b>Codex</b> (agent coding qua CLI).</li><li>Công cụ chạy <b>độc lập</b>, xử lý logic phức tạp, tích hợp sâu hệ thống/dữ liệu lớn.</li><li>Hợp với: việc cần một ứng dụng/script riêng, chạy trên máy hoặc server.</li></ul><div class="note">2 case study Phần 2 đi theo hướng này.</div>'}
+    ],true)}</div>
+  </div>
+</div>`,
+
+/* 2 PART 1 DIVIDER */
+`<div class="wrap" style="text-align:center">
+  <div class="bignum reveal" style="margin-inline:auto">01</div>
+  <div class="kicker reveal" style="margin-inline:auto"><span class="dot"></span>Phần 1</div>
+  <h1 class="reveal" style="font-size:clamp(30px,4.8vw,54px)">Dùng ngay <span class="grad">công cụ có sẵn</span></h1>
+  <p class="lead reveal" style="margin-inline:auto;text-align:center">Claude Cowork — giao việc qua prompt và mở rộng bằng skill, không viết code mới. Bốn luồng công việc thực tế, mỗi bước bấm để xem chi tiết.</p>
+</div>`,
+
+/* 3 CASE 1.1 EMAIL */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Case 1.1 · Lọc, sắp xếp & phân loại email / văn bản</div><h2>Sàng lọc hộp thư <span class="grad">tự động mỗi sáng</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'✉️',lead:'Agent đọc email/văn bản mới, gắn nhãn, chấm ưu tiên, tóm tắt 1 dòng và đề xuất việc cần làm.',m:[['~80%','Giảm thời gian sàng lọc'],['7:00','Chạy tự động mỗi ngày']],tags:['Claude Cowork','Gmail / Outlook']})}
+    <div>${acc([
+      {t:'Kết nối hộp thư & công cụ',s:'Mở Claude Cowork, cấp quyền đọc thư',b:'<ul><li>Mở <b>Claude Cowork</b> → Settings → Connectors → kết nối <b>Gmail</b> hoặc <b>Outlook</b>, cấp quyền đọc.</li><li>Nếu là văn bản dạng file: chọn (mount) thư mục chứa file để Claude đọc được.</li><li>Chuẩn bị danh sách nhãn: <code>Sinh viên · Công văn · Nội bộ · Khẩn · Spam</code>.</li></ul>'+shot('cowork-connectors.png','Kết nối Gmail / Outlook trong mục Connectors của Claude Cowork')},
+      {t:'Ra lệnh phân loại',s:'Dán prompt — agent đọc thư 24h qua',b:'<ul><li>Dán câu lệnh dưới đây vào ô chat của Cowork. Agent đọc email <b>chưa đọc</b>, phân loại và trả về một bảng.</li></ul>'+code('PROMPT · Phân loại email','<span class="c"># Vai trò</span>\nBạn là trợ lý phân loại email của một phòng ban tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nĐọc các email CHƯA ĐỌC trong 24h qua. Với mỗi email:\n1. Gắn 1 nhãn: [Sinh viên][Công văn][Nội bộ][Khẩn][Spam]\n2. Chấm ưu tiên P1 (khẩn) → P4 (thấp)\n3. Tóm tắt nội dung trong 1 câu (≤25 từ)\n4. Đề xuất 1 hành động cần làm\n\n<span class="c"># Quy tắc</span>\n- "Khẩn" nếu có hạn trong 48h hoặc gửi từ lãnh đạo.\n- Tên miền lạ + link rút gọn → nghi Spam, KHÔNG mở link.\n- Không chắc nhãn → để [Cần xem], đừng đoán.\n\n<span class="c"># Đầu ra</span>\nBảng: | Người gửi | Nhãn | Ưu tiên | Tóm tắt | Hành động |\nSắp xếp theo ưu tiên giảm dần.\n\n<span class="c"># Giới hạn</span>\nCHỈ phân loại & đề xuất. KHÔNG tự trả lời/xoá/chuyển tiếp.\nChờ tôi duyệt trước mọi hành động.')},
+      {t:'Xem kết quả & tinh chỉnh',s:'Sửa quy tắc nếu nhãn sai',b:'<ul><li>Đọc bảng kết quả. Nếu một loại email bị gắn sai nhãn, thêm một dòng quy tắc, ví dụ: <code>Email có chữ "học phí" → luôn nhãn [Sinh viên], ưu tiên P2.</code></li><li>Yêu cầu agent <b>sắp email vào thư mục</b> tương ứng (chỉ khi đã tin kết quả).</li></ul><div class="note">Mẹo: ban đầu để agent chỉ "đề xuất", sau 1 tuần thấy ổn mới cho tự chuyển thư mục.</div>'},
+      {t:'Lên lịch chạy tự động',s:'Mỗi sáng 7:00 không cần bấm tay',b:'<ul><li>Bảo Cowork: <i>"Chạy việc phân loại này mỗi sáng lúc 7:00 và gửi cho tôi bảng tổng hợp."</i></li><li>Hệ thống tạo một <b>Scheduled task</b> chạy lặp lại.</li></ul>'+shot('cowork-schedule-list.png','Tác vụ định kỳ (Scheduled tasks) trong Claude Cowork')}
+    ])}</div>
+  </div>
+</div>`,
+
+/* 4 CASE 1.2 EVENT */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Case 1.2 · Tổ chức sự kiện</div><h2>Từ một mô tả ngắn → <span class="grad">bộ tài liệu sự kiện</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'🎪',lead:'Hội thảo, ngày hội tuyển sinh, lễ tốt nghiệp: agent dựng kế hoạch, timeline, checklist, phân công và bản thảo truyền thông.',m:[['1 prompt','→ bộ tài liệu đầy đủ'],['5','đầu việc tự động']],tags:['Claude Cowork','Word + Excel']})}
+    <div>${acc([
+      {t:'Mô tả sự kiện (brief)',s:'Mục tiêu, ngày, quy mô, ngân sách',b:'<ul><li>Mở Claude Cowork, nêu rõ: <b>tên sự kiện, mục tiêu, ngày, đối tượng, số khách, ngân sách, địa điểm.</b> Càng cụ thể, kế hoạch càng sát.</li></ul>'+code('PROMPT · Lập kế hoạch sự kiện','Hãy lập kế hoạch tổ chức sự kiện sau cho Trường ĐH FPT Cần Thơ:\n- Tên: Ngày hội tuyển sinh 2026\n- Ngày: 15/08/2026 · Quy mô: ~500 khách\n- Mục tiêu: thu hút học sinh lớp 12 & phụ huynh\n- Ngân sách: 80 triệu\n\nTrả về: (1) kế hoạch tổng thể; (2) timeline đếm ngược\ntừ ngày G; (3) checklist hạng mục; (4) bảng phân công\nnhân sự; (5) draft thư mời + 2 post mạng xã hội.\nTạo thành file Word + Excel để tôi chỉnh sửa.')},
+      {t:'Dựng kế hoạch & timeline',s:'Plan + mốc thời gian ngược',b:'<ul><li>Agent xuất <b>kế hoạch tổng thể</b> và <b>timeline đếm ngược</b> từ ngày tổ chức (D-30, D-14, D-7, D-1).</li><li>Yêu cầu xuất file Word/Excel để cả nhóm cùng sửa.</li></ul>'},
+      {t:'Checklist & phân công',s:'Hạng mục + người phụ trách + hạn',b:'<ul><li>Agent sinh <b>checklist</b> (hậu cần, MC, âm thanh, quà tặng, an ninh…) và <b>bảng phân công</b> kèm deadline.</li><li>Bổ sung tên nhân sự thật: <i>"Gán mục Hậu cần cho anh A, Truyền thông cho chị B."</i></li></ul>'},
+      {t:'Truyền thông & duyệt',s:'Thư mời, post MXH, kịch bản MC',b:'<ul><li>Agent viết <b>draft thư mời</b>, bài post Fanpage, kịch bản MC theo giọng văn nhà trường.</li><li>Bạn xem lại, chỉnh, rồi gửi. Có thể nhờ agent tạo luôn email mời hàng loạt.</li></ul><div class="note">Người giữ quyết định cuối — agent chỉ dựng bản thảo.</div>'}
+    ])}</div>
+  </div>
+</div>`,
+
+/* 5 CASE 1.3 AI NEWS */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Case 1.3 · Bản tin AI hằng ngày</div><h2>Bản tin AI <span class="grad">tự tổng hợp & gửi mỗi sáng</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'📰',lead:'Tổng hợp tin AI nổi bật, tóm tắt tiếng Việt, dựng bản tin HTML đẹp và gửi email — chạy hoàn toàn tự động.',m:[['06:00','Gửi tự động hằng ngày'],['0 phút','Công sức soạn tay']],tags:['Skill ai-news-pipeline','Scheduled task']})}
+    <div>${acc([
+      {t:'Thu thập & tóm tắt tin',s:'10 tin AI mới nhất, tiếng Việt',b:'<ul><li>Agent tìm tin từ nguồn uy tín (OpenAI, TechCrunch, The Verge, Wired…), mỗi tin tóm tắt ~150 chữ kèm một câu phân tích.</li></ul>'+code('PROMPT · Tạo bản tin AI','Tổng hợp 10 tin tức AI nổi bật nhất trong 24h qua từ\ncác nguồn uy tín (OpenAI, Google, TechCrunch, The Verge,\nWired). Với mỗi tin: tiêu đề tiếng Việt, tóm tắt ~150 chữ,\nmột câu "vì sao quan trọng", link gốc và 1 ảnh minh hoạ.\nGom thành bản tin HTML đẹp, đặt tên file AINews.html.')},
+      {t:'Kiểm tra link & ảnh',s:'Đảm bảo link sống, thay ảnh lỗi',b:'<ul><li>Agent mở thử từng link xem còn hoạt động không; thay link/ảnh hỏng. Bước "kiểm định" này giúp bản tin không gửi đi nội dung lỗi.</li></ul>'},
+      {t:'Dựng file HTML',s:'Giao diện bản tin chuyên nghiệp',b:'<ul><li>Tổng hợp vào <code>AINews.html</code>: thẻ tin có ảnh thumbnail, tiêu đề, tóm tắt, nút đọc thêm. Xem trước trong trình duyệt, chỉnh nếu cần.</li></ul>'+shot('ainews1.png','Agent dựng bản tin AINews.html — chạy trọn workflow trong Cowork')},
+      {t:'Gửi email & lên lịch',s:'Gửi danh sách nhận lúc 6:00',b:'<ul><li>Agent gửi bản tin qua Outlook/Gmail tới danh sách đăng ký.</li><li>Đặt Scheduled task: <i>"Tạo và gửi bản tin AI mỗi ngày lúc 6:00."</i></li></ul>'+shot('cowork-schedule-detail.png','Tác vụ định kỳ "Daily AI news" với hướng dẫn 4 bước')+shot('ainews2.png','Bản tin AI đã gửi tới hộp thư người nhận')+'<div class="note">Trường đã có sẵn bộ skill <code>ai-news-pipeline</code> làm trọn 4 bước này chỉ với một câu lệnh.</div>'}
+    ])}</div>
+  </div>
+</div>`,
+
+/* 6 CASE 1.4 DVSV */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Case 1.4 · Email tự động — Phòng Dịch vụ Sinh viên</div><h2>Soạn email cá nhân hoá <span class="grad">trong vài giây</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'📤',lead:'Trả lời nhanh câu hỏi lặp lại: học phí, lịch học, giấy xác nhận, KTX. Agent soạn từ template + dữ liệu, người duyệt rồi gửi.',m:[['5×','Tốc độ phản hồi SV'],['100%','Đúng giọng văn chuẩn']],tags:['Claude Cowork','Template + Excel']})}
+    <div>${acc([
+      {t:'Chuẩn bị template & dữ liệu',s:'Mẫu trả lời chuẩn + danh sách SV',b:'<ul><li>Tập hợp các <b>mẫu email chuẩn</b> của phòng (xác nhận sinh viên, nhắc học phí, hướng dẫn KTX…).</li><li>Có file Excel danh sách SV (Họ tên, MSSV, Email, Lớp) để cá nhân hoá. Kết nối Gmail/Outlook trong Cowork.</li></ul>'},
+      {t:'Nhận yêu cầu & chọn mẫu',s:'Agent nhận diện loại yêu cầu',b:'<ul><li>Dán yêu cầu của SV vào Cowork; agent nhận diện loại và chọn template phù hợp.</li></ul>'+code('PROMPT · Soạn email phản hồi SV','Bạn là cán bộ Phòng Dịch vụ Sinh viên, Trường ĐH FPT Cần Thơ.\nDựa trên yêu cầu của sinh viên và bộ mẫu đính kèm, hãy soạn email:\n- Chọn đúng mẫu, điền tên + MSSV + thông tin cụ thể\n- Giọng văn trang trọng, thân thiện, ngắn gọn\n- Nếu thiếu thông tin → ghi rõ cần SV bổ sung gì\n\nYÊU CẦU CỦA SV:\n"..."\n\nChỉ soạn nháp. Hiển thị để tôi duyệt trước khi gửi.')+shot('mailer1.png','Workflow soạn email tự động chạy trong Cowork — tạo bản nháp chờ duyệt')},
+      {t:'Cá nhân hoá & duyệt',s:'Điền thông tin, đúng giọng văn',b:'<ul><li>Agent điền tên, MSSV, lớp, thông tin cụ thể từ file dữ liệu. Cán bộ đọc lại — chỉnh nếu cần — rồi bấm gửi.</li></ul>'+shot('mailer2.png','Email "Thông tin phản hồi sinh viên" hoàn chỉnh, đúng mẫu của phòng')},
+      {t:'Gửi hàng loạt (tuỳ chọn)',s:'Cùng nội dung cho nhiều SV',b:'<ul><li>Khi cần thông báo chung (vd: nhắc đóng học phí): <i>"Soạn email nhắc học phí cá nhân hoá cho từng SV trong file này và gửi."</i></li><li>Agent tạo từng email riêng tên + số tiền, gửi sau khi bạn duyệt mẫu.</li></ul><div class="note">Luôn duyệt một mẫu trước khi cho gửi loạt — tránh sai sót hàng loạt.</div>'}
+    ])}</div>
+  </div>
+</div>`,
+
+/* 7 PART 2 DIVIDER */
+`<div class="wrap" style="text-align:center">
+  <div class="bignum reveal" style="margin-inline:auto">02</div>
+  <div class="kicker p3 reveal" style="margin-inline:auto"><span class="dot"></span>Phần 2</div>
+  <h1 class="reveal" style="font-size:clamp(30px,4.8vw,54px)">Tự xây công cụ bằng <span class="grad-o">Vibecode</span></h1>
+  <p class="lead reveal" style="margin-inline:auto;text-align:center">Mô tả ý tưởng → AI sinh ra mã <b style="color:#fff">Python / npm</b>. Dùng Antigravity & Codex tạo công cụ tự động hoá chạy độc lập. Hai case study của trường.</p>
+  <div class="pillrow reveal" style="justify-content:center"><div class="pill">🐍 Python</div><div class="pill">📦 npm</div><div class="pill">Antigravity</div><div class="pill">Codex</div></div>
+</div>`,
+
+/* 8 CASE 2.1 MEETING */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Case 2.1 · FPTU AI Meeting Take-note</div><h2>Ghi biên bản họp & <span class="grad-o">gửi tự động</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'📝',or:true,lead:'Một công cụ Python tự xây (vibecode): nhận file ghi âm → trích quyết định & việc cần làm → tạo biên bản .docx → gửi email người dự.',m:[['Python','Công cụ chạy độc lập'],['0 phút','Thư ký gõ biên bản']],tags:['Antigravity / Codex','Python']})}
+    <div>${acc([
+      {t:'Xác định đầu vào – đầu ra & thư viện',s:'Audio → biên bản .docx + email',b:'<ul><li><b>Đầu vào:</b> file ghi âm (mp3/wav) hoặc transcript .txt.</li><li><b>Đầu ra:</b> biên bản .docx + danh sách action items + email gửi người dự.</li><li><b>Thư viện Python:</b> <code>faster-whisper</code> (giọng nói→văn bản), <code>python-docx</code> (tạo .docx), <code>smtplib</code> (gửi mail).</li></ul>'},
+      {t:'Vibecode bằng Antigravity / Codex',s:'Mô tả → AI sinh mã Python hoàn chỉnh',b:'<ul><li>Mở Antigravity (hoặc Codex), dán yêu cầu — agent sinh ra <b>project Python đầy đủ</b> (mã nguồn + requirements + README).</li></ul>'+code('PROMPT · Vibecode công cụ biên bản họp','Viết cho tôi một công cụ Python tên "fptu_meeting_note".\nChức năng:\n1. Nhận đường dẫn file ghi âm (mp3/wav) hoặc transcript .txt\n2. Dùng faster-whisper chuyển giọng nói → văn bản (tiếng Việt)\n3. Gọi API LLM trích: QUYẾT ĐỊNH, ACTION ITEMS (việc – người – hạn)\n4. Tạo biên bản .docx theo mẫu (python-docx)\n5. Gửi email biên bản tới danh sách người dự (smtplib)\nSinh đầy đủ: mã nguồn, requirements.txt, README hướng dẫn chạy,\nfile .env mẫu (SMTP, API key). Code rõ ràng, chú thích tiếng Việt.',true)},
+      {t:'Cài & chạy thử',s:'pip install rồi chạy trên 1 file họp',b:'<ul><li>Cài thư viện rồi chạy thử với một file họp thật:</li></ul>'+code('Terminal','<span class="c"># cài thư viện</span>\npip install -r requirements.txt\n<span class="c"># chạy với file ghi âm</span>\npython meeting_note.py hop_dao_tao.mp3',true)+'<ul><li>Kiểm tra biên bản có đủ quyết định & action items; nhờ agent sửa lại nếu thiếu.</li></ul>'},
+      {t:'Đóng gói & tự động hoá',s:'Lên lịch hoặc làm app cho cả phòng',b:'<ul><li>Đặt chạy theo lịch (cron / Windows Task Scheduler), hoặc đóng gói thành CLI / app nhỏ để cả phòng dùng chung.</li><li>Lưu mã nguồn vào kho chung để tái sử dụng và nâng cấp.</li></ul><div class="note">Giai đoạn đầu vẫn nên để chủ trì xem biên bản trước khi gửi.</div>'}
+    ],true)}</div>
+  </div>
+</div>`,
+
+/* 9 CASE 2.2 EXAM */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Case 2.2 · Nhắc lịch coi thi — Phòng Khảo thí</div><h2>Không cán bộ nào <span class="grad-o">quên ca coi thi</span></h2></div>
+  <div class="caserow reveal">
+    ${spec({ic:'📅',or:true,lead:'Một công cụ Python tự xây (vibecode): đọc bảng phân công (Excel) và gửi email nhắc giám thị đúng ca/phòng/giờ, chạy tự động theo lịch.',m:[['Python','Đọc Excel + gửi mail'],['0 sót','Cán bộ quên ca thi']],tags:['Antigravity / Codex','Python']})}
+    <div>${acc([
+      {t:'Chuẩn hoá bảng phân công',s:'Excel: tên, email, ngày, ca, phòng, giờ',b:'<ul><li>Đảm bảo file phân công có cột rõ ràng: <code>Họ tên · Email · Ngày · Ca · Phòng · Giờ</code>. Email dùng tên miền trường (<code>@fpt.edu.vn</code>).</li></ul>'},
+      {t:'Vibecode công cụ Python',s:'Mô tả → AI sinh mã đọc Excel & gửi mail',b:'<ul><li>Dán yêu cầu vào Antigravity/Codex — agent sinh ra công cụ Python hoàn chỉnh.</li></ul>'+code('PROMPT · Vibecode công cụ nhắc coi thi','Viết công cụ Python tên "fptu_exam_reminder".\n1. Đọc file Excel phân công coi thi bằng openpyxl/pandas\n   (cột: Họ tên, Email, Ngày, Ca, Phòng, Giờ)\n2. Với mỗi giám thị, soạn email nhắc cá nhân hoá\n   (điền tên/ngày/ca/phòng/giờ), giọng trang trọng\n3. Tính mốc gửi: trước 1 ngày (17h) và trước 1 giờ;\n   chỉ gửi cho địa chỉ @fpt.edu.vn\n4. Gửi qua smtplib; ghi log vào reminders_sent.csv\n5. Ca thiếu giám thị → in cảnh báo ra màn hình\nSinh kèm requirements.txt, README, .env mẫu (SMTP).\nChú thích tiếng Việt.',true)},
+      {t:'Cài & đặt lịch chạy tự động',s:'cron / Task Scheduler — quét & gửi mỗi ngày',b:'<ul><li>Cài và chạy thử, rồi đặt lịch để công cụ tự chạy hằng ngày.</li></ul>'+code('Terminal','pip install -r requirements.txt\npython exam_reminder.py phancong.xlsx\n\n<span class="c"># macOS/Linux: chạy mỗi ngày 17h (crontab -e)</span>\n0 17 * * *  python /duong-dan/exam_reminder.py phancong.xlsx\n<span class="c"># Windows: dùng Task Scheduler tạo tác vụ tương tự</span>',true)},
+      {t:'Theo dõi & báo cáo',s:'Log đã gửi, cảnh báo ca thiếu người',b:'<ul><li>Sau mỗi lần chạy, công cụ ghi log <code>reminders_sent.csv</code>: <b>đã gửi / lỗi / ca chưa có giám thị.</b> Phòng Khảo thí nhận cảnh báo sớm để bổ sung nhân sự.</li></ul><div class="note">Công cụ chỉ đọc & gửi nhắc — không tự thay đổi file phân công gốc.</div>'}
+    ],true)}</div>
+  </div>
+</div>`,
+
+/* 10 GUIDE DIVIDER */
+`<div class="wrap" style="text-align:center">
+  <div class="bignum reveal" style="margin-inline:auto">03</div>
+  <div class="kicker p2 reveal" style="margin-inline:auto"><span class="dot"></span>Hướng dẫn chi tiết</div>
+  <h1 class="reveal" style="font-size:clamp(30px,4.8vw,52px)">Bắt tay làm: <span class="grad">từng bước cụ thể</span></h1>
+  <p class="lead reveal" style="margin-inline:auto;text-align:center">Dùng app nào · tạo skill ra sao · prompt mẫu copy được · chỉnh sửa & vận hành thế nào. Bấm vào từng mục để mở rộng.</p>
+</div>`,
+
+/* 11 GUIDE 1: choose app */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Hướng dẫn · Chọn đúng công cụ</div><h2>Mỗi công cụ cho một hướng</h2></div>
+  <div class="reveal">${acc([
+    {t:'Claude Cowork — Hướng 1',s:'Việc văn phòng + tạo skill · không cần code',b:'<ul><li>Hợp nhất cho <b>4 case Phần 1</b>: xử lý email, soạn văn bản, tạo file Word/Excel/slide, làm việc với lịch.</li><li>Có sẵn <b>Skills</b> (mở rộng bằng mô tả) và <b>Scheduled task</b> (chạy theo lịch). Kết nối Gmail, Outlook, Drive, Excel…</li><li><b>Khi nào dùng:</b> hầu hết việc hành chính, không cần lập trình.</li></ul>'+shot('cowork-dispatch.png','Giao diện Claude Cowork — giao việc cho agent ngay trên máy của bạn')},
+    {t:'Antigravity — Hướng 2 (vibecode)',s:'IDE agentic · viết công cụ Python/npm',b:'<ul><li>IDE có agent tự lập kế hoạch, sửa nhiều file, chạy & kiểm thử — sinh ra <b>mã nguồn thật</b> (Python/npm).</li><li><b>Khi nào dùng:</b> cần một công cụ/ứng dụng/web app riêng (vd: trang tra cứu, dashboard, script xử lý).</li></ul>'+shot('banana_antigravity.png','Antigravity IDE — môi trường lập trình có agent hỗ trợ')},
+    {t:'Codex — Hướng 2 (vibecode)',s:'Agent coding qua CLI/cloud',b:'<ul><li>Giao task code, agent sinh & chạy mã, mở pull request.</li><li><b>Khi nào dùng:</b> script hoá xử lý dữ liệu, tích hợp hệ thống, công cụ kỹ thuật chạy độc lập.</li></ul>'},
+    {t:'Quy trình chung 4 bước',s:'Áp dụng cho cả hai hướng',b:'<ul><li><b>1. Mô tả mục tiêu:</b> nêu rõ đầu vào – đầu ra – ràng buộc.</li><li><b>2. Chuẩn bị dữ liệu:</b> cấp quyền hộp thư / thư mục / bảng tính.</li><li><b>3. Chạy & duyệt:</b> agent làm, bạn kiểm tra kết quả.</li><li><b>4. Lặp & lên lịch:</b> tinh chỉnh, đặt chạy tự động.</li></ul>'}
+  ])}</div>
+</div>`,
+
+/* 12 GUIDE 1: prompt formula */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Hướng dẫn ① · Công thức prompt</div><h2>Viết prompt tốt theo <span class="grad">6 phần</span></h2></div>
+  <p class="lead reveal">Một prompt rõ ràng cho kết quả ổn định. Bấm để xem giải thích & ví dụ.</p>
+  <div class="reveal">${acc([
+    {t:'Công thức 6 phần',s:'Vai trò · Bối cảnh · Nhiệm vụ · Quy tắc · Đầu ra · Giới hạn',b:'<ul><li><b>Vai trò:</b> "Bạn là trợ lý… của Trường ĐH FPT Cần Thơ."</li><li><b>Bối cảnh:</b> tình huống, dữ liệu agent sẽ gặp.</li><li><b>Nhiệm vụ:</b> liệt kê việc cần làm, đánh số.</li><li><b>Quy tắc:</b> các tình huống đặc biệt, điều cần tránh.</li><li><b>Đầu ra:</b> định dạng mong muốn (bảng, file Word…).</li><li><b>Giới hạn:</b> AI được/không được làm gì — luôn có dòng "chờ tôi duyệt".</li></ul>'},
+    {t:'Mẫu prompt rút gọn — dùng ngay',s:'Sao chép & thay phần in hoa',b:code('PROMPT · Khung dùng chung','<span class="c"># Vai trò</span>\nBạn là [VAI TRÒ] của Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Bối cảnh</span>\n[MÔ TẢ TÌNH HUỐNG / DỮ LIỆU]\n\n<span class="c"># Nhiệm vụ</span>\n1. [VIỆC 1]\n2. [VIỆC 2]\n\n<span class="c"># Quy tắc</span>\n- [TRƯỜNG HỢP ĐẶC BIỆT]\n- Nếu không chắc → hỏi lại, đừng đoán.\n\n<span class="c"># Đầu ra</span>\n[ĐỊNH DẠNG: bảng / file Word / email…]\n\n<span class="c"># Giới hạn</span>\nChỉ [PHẠM VI CHO PHÉP]. Chờ tôi duyệt trước khi gửi/xoá/thay đổi.')},
+    {t:'Mẹo tinh chỉnh',s:'Khi kết quả chưa đúng ý',b:'<ul><li>Thêm <b>ví dụ mẫu</b> (1 đầu vào → 1 đầu ra đúng) — cải thiện rất nhiều.</li><li>Agent làm sai một kiểu → thêm đúng <b>một dòng quy tắc</b> cho kiểu đó, đừng viết lại cả prompt.</li><li>Yêu cầu agent <b>giải thích vì sao</b> nó làm vậy để phát hiện hiểu nhầm.</li><li>Lưu prompt tốt thành <b>thư viện dùng chung</b> cho phòng.</li></ul>'}
+  ])}</div>
+</div>`,
+
+/* 13 GUIDE 2: anatomy of a skill */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Hướng dẫn ① · Tạo skill cho Cowork</div><h2>Mở rộng Cowork bằng <span class="grad">skill</span></h2></div>
+  <p class="lead reveal">Skill là cách mở rộng Claude Cowork bằng <b>mô tả ngôn ngữ tự nhiên</b> (không phải tự code) — vẫn thuộc Hướng 1. Bấm để xem chi tiết.</p>
+  <div class="reveal">${acc([
+    {t:'Cấu tạo một skill',s:'SKILL.md · scripts · assets',b:'<ul><li><b>SKILL.md</b> — bộ não: mô tả <i>khi nào kích hoạt</i> + <i>hướng dẫn từng bước</i> cho agent.</li><li><b>scripts/</b> — đoạn xử lý nhỏ (nếu cần): đọc Excel, tạo .docx…</li><li><b>assets/</b> — template biên bản, mẫu email, cấu hình.</li><li><b>description</b> — câu kích hoạt: "khi người dùng nói…".</li></ul><div class="note">Ví dụ: <code>fptu-email-classifier/ → SKILL.md · assets/labels.txt</code></div>'+shot('cowork-skills.png','Danh sách Skills trong Claude Cowork — nơi cài & xem từng skill')},
+    {t:'Cách dễ nhất: dùng skill-creator',s:'Mô tả bằng lời — agent tự sinh skill',b:'<ul><li>Không cần viết tay. Mở Cowork và yêu cầu <b>skill-creator</b> tạo skill từ mô tả của bạn.</li><li>Agent sinh <b>SKILL.md + hướng dẫn cài</b>. Bạn chỉ rà lại và thử.</li></ul><div class="note">Skill hợp cho việc lặp lại ngay trong Cowork. Cần công cụ chạy độc lập, logic phức tạp → xem Hướng 2 (vibecode).</div>'},
+    {t:'Bốn bước tạo skill',s:'Trigger → các bước → mẫu → cài',b:'<ul><li><b>1. Định nghĩa trigger:</b> câu nói nào kích hoạt skill.</li><li><b>2. Viết các bước:</b> liệt kê quy trình rõ ràng trong SKILL.md.</li><li><b>3. Thêm template/mẫu:</b> mẫu đầu ra (email, biên bản…).</li><li><b>4. Cài:</b> đưa vào Settings › Capabilities, chạy thử.</li></ul>'}
+  ])}</div>
+</div>`,
+
+/* 14 GUIDE 2: SKILL.md sample */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Hướng dẫn ① · Mẫu SKILL.md</div><h2>Mẫu <span class="grad">SKILL.md</span> — sao chép & sửa</h2></div>
+  <p class="lead reveal">Cấu trúc một file SKILL.md hoàn chỉnh cho một skill phân loại email. Bấm để mở và copy.</p>
+  <div class="reveal">${acc([
+    {t:'SKILL.md mẫu — phân loại email',s:'Mô tả + quy trình + giới hạn',b:code('SKILL.md · fptu-email-classifier','<span class="c">---</span>\n<span class="k">name:</span> fptu-email-classifier\n<span class="k">description:</span> <span class="s">Dùng khi cần lọc & phân loại email phòng ban.\n  Đọc email chưa đọc, gắn nhãn, chấm ưu tiên, tóm tắt và đề xuất.\n  Kích hoạt khi người dùng nói: "phân loại email", "sàng lọc hộp thư".</span>\n<span class="c">---</span>\n\n<span class="c"># Quy trình</span>\n1. Đọc email CHƯA ĐỌC trong 24h qua.\n2. Gắn 1 nhãn: [Sinh viên][Công văn][Nội bộ][Khẩn][Spam].\n3. Chấm ưu tiên P1–P4, tóm tắt 1 câu, đề xuất 1 hành động.\n4. Trả về bảng, sắp theo ưu tiên giảm dần.\n\n<span class="c"># Giới hạn</span>\n- Chỉ phân loại & đề xuất, KHÔNG tự trả lời/xoá/chuyển tiếp.\n- Tên miền lạ + link rút gọn → nghi Spam, không mở link.\n- Chờ người duyệt trước mọi hành động.',true)},
+    {t:'Cài đặt skill',s:'Đưa vào Settings › Capabilities',b:'<ul><li>Lưu thư mục skill vào nơi quy định, hoặc để skill-creator cài giúp.</li><li>Vào <b>Settings → Capabilities</b> để bật skill. Kiểm tra description đủ rõ để agent tự kích hoạt đúng lúc.</li></ul><div class="note">Skill được cài qua Settings, không chỉnh trực tiếp trong phiên chat.</div>'}
+  ])}</div>
+</div>`,
+
+/* 15 GUIDE 2: VIBECODE Python/npm */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Hướng dẫn ② · Vibecode — tạo công cụ Python / npm</div><h2>Mô tả ý tưởng → <span class="grad-o">AI viết code</span></h2></div>
+  <p class="lead reveal">Khi việc cần một ứng dụng/script riêng, dùng Antigravity hoặc Codex để AI sinh mã Python/npm rồi chạy. Bấm để xem chi tiết.</p>
+  <div class="reveal">${acc([
+    {t:'Khi nào tự code thay vì làm skill',s:'Ranh giới giữa Hướng 1 và Hướng 2',b:'<ul><li>Cần xử lý <b>logic phức tạp</b>, dữ liệu lớn, hoặc tích hợp API/hệ thống.</li><li>Cần công cụ <b>chạy độc lập</b> (trên máy/server), không phụ thuộc Cowork.</li><li>Cần đóng gói cho <b>nhiều người dùng</b> hoặc chạy định kỳ tự động.</li></ul><div class="note">Việc lặp lại ngay trong Cowork → dùng skill (Hướng 1). Cần "phần mềm" thật → vibecode (Hướng 2).</div>'},
+    {t:'Quy trình vibecode 4 bước',s:'Mô tả → sinh code → chạy → đóng gói',b:'<ul><li><b>1. Mô tả yêu cầu:</b> đầu vào/ra, thư viện gợi ý, ràng buộc.</li><li><b>2. AI sinh project:</b> mã nguồn + requirements.txt + README.</li><li><b>3. Chạy thử:</b> <code>pip install -r requirements.txt</code> rồi <code>python main.py</code>; báo lỗi cho agent sửa.</li><li><b>4. Đóng gói:</b> lên lịch (cron / Task Scheduler), lưu vào kho chung.</li></ul>'},
+    {t:'Cấu trúc project & cách chạy',s:'Một dự án Python điển hình',b:code('Cấu trúc + lệnh chạy','<span class="c"># cấu trúc thư mục</span>\nfptu_exam_reminder/\n├── exam_reminder.py      <span class="c"># mã chính</span>\n├── requirements.txt      <span class="c"># openpyxl, pandas, python-dotenv</span>\n├── .env                  <span class="c"># SMTP_USER, SMTP_PASS</span>\n└── README.md             <span class="c"># hướng dẫn chạy</span>\n\n<span class="c"># cài & chạy</span>\npip install -r requirements.txt\npython exam_reminder.py phancong.xlsx',true)},
+    {t:'Prompt vibecode dùng chung',s:'Sao chép & thay phần trong ngoặc',b:code('PROMPT · Khung vibecode','Viết cho tôi một công cụ [Python / Node] tên "[tên_công_cụ]".\nChức năng:\n1. [bước 1]\n2. [bước 2]\n3. [bước 3]\nĐầu vào: [...]   ·   Đầu ra: [...]\nThư viện gợi ý: [...]\nSinh đầy đủ: mã nguồn, requirements.txt (hoặc package.json),\nREADME hướng dẫn chạy, file .env mẫu cho thông tin nhạy cảm.\nCode rõ ràng, có chú thích tiếng Việt, xử lý lỗi cơ bản.',true)}
+  ],true)}</div>
+</div>`,
+
+/* 16 GUIDE 3: edit & operate */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p2"><span class="dot"></span>Hướng dẫn ③ · Chỉnh sửa & vận hành</div><h2>Tinh chỉnh & chạy <span class="grad">an toàn</span></h2></div>
+  <div class="reveal">${acc([
+    {t:'Chỉnh sửa prompt / skill / công cụ',s:'Sửa nhỏ, thử lại ngay',b:'<ul><li>Thay đổi nhỏ một lần, chạy thử ngay, so sánh kết quả trước/sau.</li><li>Viết rõ phần <b>Quy tắc</b> và <b>Giới hạn</b> để giảm sai sót.</li><li>Skill: sửa <code>SKILL.md</code>; prompt: lưu bản tốt vào thư viện; công cụ Python: nhờ agent sửa code rồi chạy lại.</li></ul>'},
+    {t:'Kiểm định kết quả',s:'Bộ "dữ liệu vàng" để thử lại',b:'<ul><li>Chuẩn bị 10–20 ví dụ có <b>đáp án đúng</b> (vd: 15 email kèm nhãn đúng).</li><li>Sau mỗi lần sửa, cho agent chạy lại bộ này để chắc chắn không làm hỏng kết quả cũ.</li></ul>'},
+    {t:'Bắt đầu nhỏ, nâng dần quyền',s:'Từ "đề xuất" đến "tự chạy"',b:'<ul><li>Giai đoạn đầu: AI chỉ <b>đề xuất / tạo nháp</b>, người duyệt mọi thứ.</li><li>Khi đã tin (có log, ít lỗi): mới cho phép AI <b>tự thực thi</b> việc rủi ro thấp.</li><li>Việc rủi ro cao (gửi loạt, thay đổi dữ liệu) luôn cần người duyệt.</li></ul>'},
+    {t:'Theo dõi & hàng rào an toàn',s:'Log, dừng được, không mở link lạ',b:'<ul><li>Theo dõi: số lần chạy, lỗi, thời gian, ai gửi cho ai (log).</li><li>Mỗi flow cần: giới hạn quyền rõ, người duyệt cho việc quan trọng, khả năng <b>dừng / hoàn tác</b>.</li><li>Tuyệt đối <b>không mở link lạ</b> trong email/văn bản để tránh lừa đảo.</li></ul>'}
+  ])}</div>
+</div>`,
+
+/* 17 HARNESS */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p2"><span class="dot"></span>Hướng dẫn · Nền tảng kỹ thuật (theo CASAN)</div><h2>Harness — <span class="grad">khung bao quanh AI</span></h2></div>
+  <p class="lead reveal">Điều tạo nên một flow đáng tin không phải bản thân model, mà là lớp <b>"harness"</b> bao quanh nó. Bấm để xem chi tiết.</p>
+  <div class="reveal">${acc([
+    {t:'Harness là gì',s:'Khung kỹ thuật biến model → hệ thống tạo kết quả',b:'<ul><li>Không phải một prompt rời rạc, mà là <b>cả môi trường được thiết kế có kiểm soát</b> để AI hành động.</li><li>Hai cơ chế cốt lõi: <b>hướng dẫn trước</b> khi AI làm (quy tắc, ngữ cảnh, chuẩn) và <b>cảm biến phản hồi sau</b> (kiểm thử, nhật ký, rà soát) để bắt lỗi.</li><li>Đây chính là khoảng cách giữa "demo gây ấn tượng" và "hệ thống vận hành thật".</li></ul>'},
+    {t:'7 thành phần Harness — gom 4 nhóm',s:'Ngữ cảnh · Kiểm định · Vận hành · Quản trị',b:'<ul><li><b>Ngữ cảnh & Công cụ:</b> cấp đúng dữ liệu + đúng công cụ (email, Excel, API…).</li><li><b>Kiểm định & Bảo mật:</b> bộ dữ liệu vàng, kiểm thử; giới hạn quyền, không mở link lạ.</li><li><b>AgentOps & Điều phối:</b> theo dõi lần chạy / lỗi / chi phí; nối nhiều bước thành luồng.</li><li><b>Quản trị & Trách nhiệm:</b> log kiểm toán, người duyệt, khả năng dừng / hoàn tác.</li></ul>'},
+    {t:'Áp vào các flow của trường',s:'Mỗi case = một harness nhỏ',b:'<ul><li><b>Phân loại email:</b> ngữ cảnh (hộp thư) + quy tắc nhãn + người duyệt.</li><li><b>Nhắc coi thi:</b> công cụ (đọc Excel, gửi mail) + log + cảnh báo ca thiếu người.</li><li><b>Bản tin AI:</b> điều phối 4 bước nối tiếp + kiểm tra link/ảnh (cảm biến phản hồi).</li></ul>'}
+  ],false)}</div>
+</div>`,
+
+/* 18 DELEGATION LEVELS L0-L5 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p2"><span class="dot"></span>Hướng dẫn · Phân quyền cho AI (theo CASAN)</div><h2>Sáu cấp <span class="grad">ủy quyền L0–L5</span></h2></div>
+  <p class="lead reveal">Luôn bắt đầu ở cấp thấp, chỉ nâng khi đã tin tưởng. Cấp càng cao, hàng rào kiểm soát (audit, hoàn tác, người duyệt) càng nghiêm.</p>
+  <div class="grid g3 reveal">
+    <div class="card"><span class="bar"></span><span class="tag cy">L0</span><h3>Quan sát</h3><p>AI tìm kiếm, tóm tắt, phân loại. Không hành động.</p></div>
+    <div class="card"><span class="bar"></span><span class="tag cy">L1</span><h3>Tạo bản nháp</h3><p>AI tạo nháp — con người duyệt toàn bộ.</p></div>
+    <div class="card"><span class="bar"></span><span class="tag cy">L2</span><h3>Đề xuất</h3><p>AI đề xuất phương án — con người quyết định.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag or">L3</span><h3>Thực thi rủi ro thấp</h3><p>AI thực thi tác vụ rủi ro thấp trong giới hạn rõ.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag or">L4</span><h3>Vận hành workflow</h3><p>AI chạy luồng có hàng rào, audit, xử lý ngoại lệ.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag or">L5</span><h3>Tự chủ cao</h3><p>Tự chủ trong phạm vi đã có quản trị nghiêm ngặt.</p></div>
+  </div>
+  <div class="reveal" style="margin-top:14px">${acc([
+    {t:'Gắn cấp ủy quyền cho từng flow',s:'Bắt đầu thấp, nâng dần khi đã tin',b:'<ul><li><b>Phân loại email · Email DVSV:</b> L0–L2 (đề xuất / nháp, người duyệt).</li><li><b>Bản tin AI:</b> L3 (tự chạy theo lịch, rủi ro thấp).</li><li><b>Biên bản họp · Nhắc coi thi:</b> L4 (vận hành luồng có log & hàng rào).</li><li><b>L5</b> chỉ dùng khi đã có quản trị/kiểm toán đầy đủ — hiếm khi cần ở giai đoạn đầu.</li></ul>'}
+  ],false)}</div>
+</div>`,
+
+/* 19 ROADMAP / CLOSE */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Kết luận · Những điều cần lưu ý</div><h2>Các chú ý khi <span class="grad">triển khai</span></h2></div>
+  <div class="grid g3 reveal">
+    <div class="card"><span class="bar"></span><span class="tag cy">CON NGƯỜI QUYẾT ĐỊNH</span><h3>AI hỗ trợ, không thay thế</h3><p>Người luôn giữ quyết định cuối và chịu trách nhiệm. AI mở rộng năng lực, không thay con người phán đoán.</p></div>
+    <div class="card"><span class="bar"></span><span class="tag cy">KIỂM TRA KẾT QUẢ</span><h3>AI có thể sai / "ảo giác"</h3><p>Luôn đọc lại và duyệt trước khi gửi. Đừng tin tuyệt đối — đặc biệt với số liệu, tên, ngày tháng.</p></div>
+    <div class="card"><span class="bar"></span><span class="tag cy">BẮT ĐẦU NHỎ</span><h3>Quyền thấp rồi nâng dần</h3><p>Một flow, mức ủy quyền thấp (đề xuất/nháp). Khi ổn định, có log ít lỗi mới cho tự chạy.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag or">BẢO MẬT DỮ LIỆU</span><h3>Cẩn trọng dữ liệu nhạy cảm</h3><p>Không đưa thông tin cá nhân SV / dữ liệu mật lên công cụ chưa được duyệt. Tuyệt đối không mở link lạ.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag or">CÓ HÀNG RÀO</span><h3>Log · dừng · hoàn tác</h3><p>Mỗi flow cần nhật ký, giới hạn quyền rõ, người duyệt việc quan trọng và khả năng dừng/hoàn tác.</p></div>
+    <div class="card"><span class="bar or"></span><span class="tag gr">CON NGƯỜI & QUY TRÌNH</span><h3>Đào tạo & chuẩn hoá</h3><p>Hướng dẫn cán bộ dùng đúng cách, lập thư viện prompt/skill dùng chung và tuân thủ quy định của trường.</p></div>
+  </div>
+  <div class="cols reveal" style="margin-top:24px">
+    <ul class="clean">
+      <li><b>Đo hiệu quả:</b> ghi nhận thời gian/tiền tiết kiệm để quyết định mở rộng.</li>
+      <li><b>Tài liệu hoá:</b> lưu lại prompt, skill, mã nguồn để tái dùng và bàn giao.</li>
+      <li><b>Mở rộng có chọn lọc:</b> nhân rộng flow đã chạy ổn sang phòng ban khác.</li>
+    </ul>
+    <div>
+      <h3 class="grad" style="font-size:24px">Từ thử nghiệm → vận hành thật.</h3>
+      <p class="muted" style="margin-top:9px">Biến AI thành năng lực vận hành đáng tin cậy hằng ngày của Trường ĐH FPT Cần Thơ.</p>
+      <div class="pillrow"><div class="pill">Cảm ơn đã theo dõi 🚀</div></div>
+    </div>
+  </div>
+</div>`
+];
+
+/* TOC for left menu */
+const TOC=[
+  {g:'Mở đầu',items:[[0,'Trang bìa'],[1,'Hai hướng tự động hoá']]},
+  {g:'Phần 1 — Công cụ có sẵn & Skill',items:[[2,'Giới thiệu Phần 1'],[3,'1.1 · Lọc & phân loại email'],[4,'1.2 · Tổ chức sự kiện'],[5,'1.3 · Bản tin AI'],[6,'1.4 · Email phòng DVSV']]},
+  {g:'Phần 2 — Tự xây công cụ (Vibecode)',items:[[7,'Giới thiệu Phần 2'],[8,'2.1 · Biên bản họp (Python)'],[9,'2.2 · Nhắc lịch coi thi (Python)']]},
+  {g:'Hướng dẫn chi tiết',items:[[10,'Giới thiệu hướng dẫn'],[11,'Chọn đúng công cụ'],[12,'① Công thức prompt'],[13,'① Tạo skill cho Cowork'],[14,'① Mẫu SKILL.md'],[15,'② Vibecode Python/npm'],[16,'③ Chỉnh sửa & vận hành'],[17,'Harness — khung kỹ thuật'],[18,'Phân quyền AI (L0–L5)']]},
+  {g:'Kết',items:[[19,'Các chú ý khi triển khai']]}
+];
+
+/* ============ BUILD ============ */
+const deck=document.getElementById('deck'),dotsBox=document.getElementById('dots'),tocBox=document.getElementById('toc');
+slides.forEach((html,i)=>{
+  const s=document.createElement('section');
+  s.className='slide'+(i===0?' active':'')+(html.indexOf('class="shead"')>-1?' doc':'');
+  s.innerHTML=html;deck.appendChild(s);
+  if(s.classList.contains('doc')){
+    const wrap=s.querySelector('.wrap'),sh=wrap&&wrap.querySelector('.shead');
+    if(wrap&&sh){const sb=document.createElement('div');sb.className='sbody';
+      let node=sh.nextSibling;while(node){const nx=node.nextSibling;sb.appendChild(node);node=nx;}
+      wrap.appendChild(sb);}
+  }
+  const d=document.createElement('div');d.className='d'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsBox.appendChild(d);
+});
+// build TOC
+TOC.forEach(grp=>{
+  const h=document.createElement('div');h.className='toc-g';h.textContent=grp.g;tocBox.appendChild(h);
+  grp.items.forEach(([idx,label])=>{
+    const a=document.createElement('div');a.className='toc-a';a.dataset.i=idx;
+    a.innerHTML='<span class="n">'+(idx+1).toString().padStart(2,'0')+'</span>'+label;
+    a.addEventListener('click',()=>{go(idx);closeMenu();});
+    tocBox.appendChild(a);
+  });
+});
+const slideEls=[...document.querySelectorAll('.slide')],dotEls=[...document.querySelectorAll('.dots .d')],tocEls=[...document.querySelectorAll('.toc-a')];
+let cur=0;const total=slides.length;document.getElementById('total').textContent=total;
+function go(n){
+  n=Math.max(0,Math.min(total-1,n));if(n===cur)return;
+  slideEls[cur].classList.remove('active');dotEls[cur].classList.remove('on');cur=n;
+  slideEls[cur].classList.add('active');slideEls[cur].scrollTop=0;dotEls[cur].classList.add('on');
+  const sb=slideEls[cur].querySelector('.sbody');if(sb)sb.scrollTop=0;
+  document.getElementById('cur').textContent=cur+1;
+  document.getElementById('progress').style.width=(cur/(total-1)*100)+'%';
+  tocEls.forEach(a=>a.classList.toggle('active',+a.dataset.i===cur));
+  if(window.__setAccent)window.__setAccent(cur/(total-1));
+}
+tocEls[0]&&tocEls[0].classList.add('active');
+/* đo chiều cao tiêu đề cố định để ghim thẻ trái ngay bên dưới */
+function measureHead(sl){if(!sl||!sl.classList.contains('doc'))return;const sh=sl.querySelector('.shead');if(sh)sl.style.setProperty('--headh',sh.offsetHeight+'px');}
+window.addEventListener('resize',()=>measureHead(slideEls[cur]));
+measureHead(slideEls[cur]);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('prev').onclick=()=>go(cur-1);
+
+/* ===== MENU drawer ===== */
+const menu=document.getElementById('menu'),overlay=document.getElementById('overlay');
+let menuOpen=false;
+function openMenu(){menuOpen=true;menu.classList.add('open');overlay.classList.add('show');}
+function closeMenu(){menuOpen=false;menu.classList.remove('open');overlay.classList.remove('show');}
+function toggleMenu(){menuOpen?closeMenu():openMenu();}
+document.getElementById('menuBtn').addEventListener('click',e=>{e.stopPropagation();toggleMenu();});
+document.getElementById('closeMenu').addEventListener('click',closeMenu);
+overlay.addEventListener('click',closeMenu);
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='Escape'){closeMenu();return;}
+  if(menuOpen)return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1);}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+  if(e.key==='Home')go(0);if(e.key==='End')go(total-1);
+});
+/* cuộn dọc chỉ cuộn nội dung — KHÔNG đổi slide. Chỉ vuốt NGANG mới chuyển. */
+let tX=0,tY=0;
+window.addEventListener('touchstart',e=>{tX=e.touches[0].clientX;tY=e.touches[0].clientY;},{passive:true});
+window.addEventListener('touchend',e=>{
+  if(menuOpen)return;
+  const dx=tX-e.changedTouches[0].clientX,dy=tY-e.changedTouches[0].clientY;
+  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4){if(dx>0)go(cur+1);else go(cur-1);}
+},{passive:true});
+
+/* accordion + copy */
+document.addEventListener('click',e=>{
+  const copyBtn=e.target.closest('.copy');
+  if(copyBtn){
+    const pre=copyBtn.closest('.code').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(()=>{
+      copyBtn.textContent='✓ Đã copy';copyBtn.classList.add('done');
+      setTimeout(()=>{copyBtn.textContent='Copy';copyBtn.classList.remove('done');},1700);
+    }).catch(()=>copyBtn.textContent='Ctrl+C');
+    e.stopPropagation();return;
+  }
+  const head=e.target.closest('.ah');
+  if(head){head.parentElement.classList.toggle('open');}
+});
+
+/* ============ THREE.JS — TECH SPACE (warp on click) ============ */
+(function(){
+  const canvas=document.getElementById('bg-canvas');
+  let renderer,scene,camera,points,lines,stars,raf;
+  const N=140,R=80,LINK=20,SN=720;
+  const pos=new Float32Array(N*3),vel=[];let accent=0;
+  let rotVx=0,rotVy=0,camZ=110,camZTarget=110,warp=0;
+  try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});}
+  catch(err){canvas.style.display='none';return;}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x070a14,0.0042);
+  camera=new THREE.PerspectiveCamera(62,1,1,900);camera.position.z=110;
+
+  const c=document.createElement('canvas');c.width=c.height=64;const cx=c.getContext('2d');
+  const g=cx.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(180,230,255,.85)');g.addColorStop(1,'rgba(120,180,255,0)');
+  cx.fillStyle=g;cx.beginPath();cx.arc(32,32,32,0,7);cx.fill();
+  const tex=new THREE.CanvasTexture(c);
+
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-.5)*R*2;pos[i*3+1]=(Math.random()-.5)*R*1.3;pos[i*3+2]=(Math.random()-.5)*R*2;
+    vel.push(new THREE.Vector3((Math.random()-.5)*.06,(Math.random()-.5)*.06,(Math.random()-.5)*.06));
+  }
+  const pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const pMat=new THREE.PointsMaterial({size:2.4,map:tex,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending,color:new THREE.Color(0x35d0ee)});
+  points=new THREE.Points(pGeo,pMat);scene.add(points);
+
+  const lGeo=new THREE.BufferGeometry();const maxSeg=N*6;const lPos=new Float32Array(maxSeg*3*2);
+  lGeo.setAttribute('position',new THREE.BufferAttribute(lPos,3));
+  const lMat=new THREE.LineBasicMaterial({color:new THREE.Color(0x6f7bff),transparent:true,opacity:.14,blending:THREE.AdditiveBlending,depthWrite:false});
+  lines=new THREE.LineSegments(lGeo,lMat);scene.add(lines);
+
+  const sPos=new Float32Array(SN*3);
+  for(let i=0;i<SN;i++){sPos[i*3]=(Math.random()-.5)*440;sPos[i*3+1]=(Math.random()-.5)*440;sPos[i*3+2]=-Math.random()*620;}
+  const sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+  const sMat=new THREE.PointsMaterial({size:1.35,map:tex,transparent:true,opacity:.62,depthWrite:false,blending:THREE.AdditiveBlending,color:new THREE.Color(0xbfe6ff)});
+  stars=new THREE.Points(sGeo,sMat);scene.add(stars);
+
+  function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  window.addEventListener('resize',resize);resize();
+
+  let mx=0,my=0;window.addEventListener('pointermove',e=>{mx=(e.clientX/window.innerWidth-.5);my=(e.clientY/window.innerHeight-.5);});
+
+  function impulse(){
+    rotVy+=(Math.random()*0.5+0.5)*0.05*(Math.random()<.5?-1:1);
+    rotVx+=(Math.random()-.5)*0.04;
+    warp=1;camZTarget=72;
+    clearTimeout(impulse._t);impulse._t=setTimeout(()=>{camZTarget=110;},90);
+  }
+  window.addEventListener('pointerdown',()=>impulse());
+
+  const colA=new THREE.Color(0x35d0ee),colB=new THREE.Color(0x9b8cff),colC=new THREE.Color(0xff9a4d);
+  window.__setAccent=v=>{accent=v;};
+  function curColor(t){const o=new THREE.Color();if(t<.5)o.copy(colA).lerp(colB,t/.5);else o.copy(colB).lerp(colC,(t-.5)/.5);return o;}
+
+  let hue=0;
+  function animate(){
+    raf=requestAnimationFrame(animate);
+    hue+=(accent-hue)*0.03;const col=curColor(hue);
+    pMat.color.copy(col).lerp(new THREE.Color(0xffffff),.25);lMat.color.copy(col);
+    sMat.color.copy(col).lerp(new THREE.Color(0xffffff),.5);
+
+    const p=pGeo.attributes.position.array;
+    for(let i=0;i<N;i++){
+      p[i*3]+=vel[i].x;p[i*3+1]+=vel[i].y;p[i*3+2]+=vel[i].z;
+      if(p[i*3]>R||p[i*3]<-R)vel[i].x*=-1;
+      if(p[i*3+1]>R*.7||p[i*3+1]<-R*.7)vel[i].y*=-1;
+      if(p[i*3+2]>R||p[i*3+2]<-R)vel[i].z*=-1;
+    }
+    pGeo.attributes.position.needsUpdate=true;
+
+    let s=0;const lp=lGeo.attributes.position.array;
+    for(let i=0;i<N&&s<maxSeg;i++)for(let j=i+1;j<N&&s<maxSeg;j++){
+      const dx=p[i*3]-p[j*3],dy=p[i*3+1]-p[j*3+1],dz=p[i*3+2]-p[j*3+2];
+      const d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+      if(d<LINK){lp[s*6]=p[i*3];lp[s*6+1]=p[i*3+1];lp[s*6+2]=p[i*3+2];lp[s*6+3]=p[j*3];lp[s*6+4]=p[j*3+1];lp[s*6+5]=p[j*3+2];s++;}
+    }
+    lGeo.setDrawRange(0,s*2);lGeo.attributes.position.needsUpdate=true;
+
+    const sp=sGeo.attributes.position.array;const sv=0.32*(1+warp*9);
+    for(let i=0;i<SN;i++){sp[i*3+2]+=sv;if(sp[i*3+2]>camZ){sp[i*3+2]=-620;sp[i*3]=(Math.random()-.5)*440;sp[i*3+1]=(Math.random()-.5)*440;}}
+    sGeo.attributes.position.needsUpdate=true;
+    warp*=0.93;
+
+    rotVx*=0.94;rotVy*=0.94;
+    points.rotation.y+=0.0007+rotVy;points.rotation.x+=0.0003+rotVx;
+    lines.rotation.copy(points.rotation);
+    stars.rotation.y+=0.00016+rotVy*0.4;
+
+    camZ+=(camZTarget-camZ)*0.08;
+    camera.position.x+=(mx*28-camera.position.x)*0.04;
+    camera.position.y+=(-my*18-camera.position.y)*0.04;
+    camera.position.z=camZ;camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+  }
+  animate();
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else animate();});
+})();
+</script>
+</body>
+</html>
