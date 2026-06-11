@@ -56,6 +56,7 @@ p{line-height:1.6}.muted{color:var(--muted)}
 
 .grid{display:grid;gap:16px;margin-top:24px;}
 .g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
   backdrop-filter:blur(10px);position:relative;overflow:hidden;transition:.3s}
 .card:hover{border-color:var(--line2);transform:translateY(-3px)}
@@ -212,7 +213,7 @@ ul.clean li b{color:#fff}
   background:linear-gradient(160deg,rgba(120,150,230,.35),rgba(120,150,230,.05));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
 
 @media(max-width:880px){
-  .g3{grid-template-columns:1fr}.cols{grid-template-columns:1fr;gap:18px}
+  .g3, .g2{grid-template-columns:1fr}.cols{grid-template-columns:1fr;gap:18px}
   .caserow{grid-template-columns:1fr;gap:20px}
   .caserow .cside{position:static;top:auto}
   .dots{max-width:34vw}.slide{padding:70px 18px 88px}.slide.doc{padding-top:0}
@@ -506,7 +507,7 @@ const slides = [
       {t:'Hướng 1 — Dùng công cụ có sẵn + tạo skill',s:'Không cần lập trình · triển khai trong giờ',b:'<ul><li>Giao việc cho agent qua <b>câu lệnh (prompt)</b> trong <b>Claude Cowork</b> rồi kiểm tra kết quả.</li><li>Mở rộng nhanh bằng cách <b>tạo skill</b> — mô tả bằng ngôn ngữ tự nhiên, <b>không tự viết code</b>.</li><li>Có <b>scheduled task</b> để chạy tự động theo lịch.</li><li>AI dừng ở mức <b>tạo nháp / đề xuất</b>, người duyệt rồi mới gửi.</li></ul><div class="note">4 case study Phần 1 và việc tạo skill đều thuộc hướng này.</div>'}
     ])}</div>
     <div>${acc([
-      {t:'Hướng 2 — Tự xây công cụ (vibecode)',s:'Viết công cụ thật bằng Python / npm',b:'<ul><li>"Vibecode": <b>mô tả ý tưởng → AI sinh ra mã nguồn</b> Python / npm hoàn chỉnh.</li><li>Công cụ: <b>Antigravity</b> (IDE agentic) · <b>Codex</b> (agent coding qua CLI).</li><li>Công cụ chạy <b>độc lập</b>, xử lý logic phức tạp, tích hợp sâu hệ thống/dữ liệu lớn.</li><li>Hợp với: việc cần một ứng dụng/script riêng, chạy trên máy hoặc server.</li></ul><div class="note">2 case study Phần 2 đi theo hướng này.</div>'}
+      {t:'Hướng 2 — Tự xây công cụ AI Automation (vibecode)',s:'Viết công cụ thật bằng Python / npm',b:'<ul><li>"Vibecode": <b>mô tả ý tưởng → AI sinh ra mã nguồn</b> Python / npm hoàn chỉnh.</li><li>Công cụ: <b>Antigravity</b> (IDE agentic) · <b>Codex</b> (agent coding qua CLI).</li><li>Công cụ chạy <b>độc lập</b>, xử lý logic phức tạp, tích hợp sâu hệ thống/dữ liệu lớn.</li><li>Hợp với: việc cần một ứng dụng/script riêng, chạy trên máy hoặc server.</li></ul><div class="note">2 case study Phần 2 đi theo hướng này.</div>'}
     ],true)}</div>
   </div>
 </div>`,
@@ -606,7 +607,7 @@ const slides = [
 `<div class="wrap" style="text-align:center">
   <div class="bignum reveal" style="margin-inline:auto">02</div>
   <div class="kicker p3 reveal" style="margin-inline:auto"><span class="dot"></span>Phần 2</div>
-  <h1 class="reveal" style="font-size:clamp(30px,4.8vw,54px)">Tự xây công cụ bằng <span class="grad-o">Vibecode</span></h1>
+  <h1 class="reveal" style="font-size:clamp(30px,4.8vw,54px)">Tự xây công cụ AI Automation bằng <span class="grad-o">Vibecode</span></h1>
   <p class="lead reveal" style="margin-inline:auto;text-align:center">Mô tả ý tưởng → AI sinh ra mã <b style="color:#fff">Python / npm</b>. Dùng Antigravity & Codex tạo công cụ tự động hoá chạy độc lập. Hai case study của trường.</p>
   <div class="pillrow reveal" style="justify-content:center"><div class="pill">🐍 Python</div><div class="pill">📦 npm</div><div class="pill">Antigravity</div><div class="pill">Codex</div></div>
 </div>`,
@@ -781,7 +782,27 @@ const slides = [
   ],false)}</div>
 </div>`,
 
-/* 19 ROADMAP / CLOSE */
+/* 20 DEMO CLAUDE COWORK */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Thực hành · Tạo Skill bằng AI</div><h2>Tự động lên lịch <span class="grad">từ Email trình duyệt</span></h2></div>
+  <p class="lead reveal">Quy trình thực hành 4 bước sử dụng AI để tự động tạo và vận hành một Skill quét email trình duyệt và lên lịch sự kiện.</p>
+  <div class="reveal">${acc([
+    {t:'1. Chuẩn bị Workspace',s:'Tạo thư mục làm việc và mở trong môi trường AI',b:'<ul><li>Tạo một thư mục trống mới trên máy tính của bạn tên là <code>fptu-email-calendar-extractor</code>.</li><li>Mở thư mục này bằng công cụ AI Code Editor (như Antigravity hoặc VS Code tích hợp AI).</li></ul>'},
+    {t:'2. Nhập Prompt để AI tự tạo Skill',s:'Sử dụng Prompt chi tiết yêu cầu AI thiết kế file cấu hình',b:'<ul><li>Nhập Prompt sau vào ô chat của AI (nhấp nút Copy ở dưới để lấy prompt):<br><br><i>"Hãy viết nội dung tệp <code>SKILL.md</code> cấu hình cho một skill Claude Cowork có tên là <code>fptu-email-calendar-extractor</code>. Skill này tự động đọc nội dung tab email hiện tại trên trình duyệt (Gmail hoặc Outlook Web), trích xuất các thông tin sự kiện nếu có (bao gồm tiêu đề, ngày/giờ bắt đầu, ngày/giờ kết thúc, địa điểm hoặc link họp trực tuyến, nội dung tóm tắt), sau đó sử dụng Google Calendar Connector hoặc Outlook Calendar Connector để tự động lên lịch. Định nghĩa các triggers kích hoạt như: \'quét email này\', \'lên lịch họp\', \'thêm sự kiện lịch\'."</i></li></ul>'},
+    {t:'3. Lưu và kiểm tra cấu hình SKILL.md',s:'AI tự động tạo file cấu hình chuẩn cho Agent',b:'<ul><li>AI sẽ tự động sinh và tạo file <code>SKILL.md</code> trong thư mục làm việc với nội dung định hình hành vi cho Agent (Xem cấu trúc file mẫu ở chân slide).</li><li>Lưu file này lại và đưa thư mục này vào thư mục chứa skill tự chọn của Claude Cowork trên máy tính của bạn.</li></ul>'},
+    {t:'4. Đăng ký & Trải nghiệm thực tế',s:'Kích hoạt skill và ra lệnh trực tiếp trên trình duyệt',b:'<ul><li>Vào phần <b>Settings → Capabilities</b> của Claude Cowork, tìm và bật (Enable) skill mới này lên.</li><li>Mở một email bất kỳ chứa thông tin sự kiện trên trình duyệt (Gmail hoặc Outlook Web).</li><li>Mở ô chat Claude Cowork bên cạnh trình duyệt và ra lệnh: <i>"Quét email này và lên lịch giúp tôi."</i></li><li><b>Kết quả:</b> Agent sẽ đọc trang hiện tại, trích xuất chính xác thông tin và tự động tạo sự kiện lịch của bạn!</li></ul>'}
+  ],true)}</div>
+  <div class="grid g2 reveal" style="margin-top:24px; gap:16px;">
+    <div>
+      ${code('PROMPT · Yêu cầu AI tạo Skill','Hãy viết nội dung tệp SKILL.md cấu hình cho một skill Claude Cowork có tên là fptu-email-calendar-extractor. Skill này tự động đọc nội dung tab email hiện tại trên trình duyệt (Gmail hoặc Outlook Web), trích xuất các thông tin sự kiện nếu có (bao gồm tiêu đề, ngày/giờ bắt đầu, ngày/giờ kết thúc, địa điểm hoặc link họp trực tuyến, nội dung tóm tắt), sau đó sử dụng Google Calendar Connector hoặc Outlook Calendar Connector để tự động lên lịch. Định nghĩa các triggers kích hoạt như: "quét email này", "lên lịch họp", "thêm sự kiện lịch".',false)}
+    </div>
+    <div>
+      ${code('KẾT QUẢ · File SKILL.md chuẩn do AI tạo ra','<span class="c">---</span>\n<span class="k">name:</span> fptu-email-calendar-extractor\n<span class="k">description:</span> <span class="s">Tự động đọc email trên trình duyệt, trích xuất sự kiện và lên lịch vào Calendar.\n  Kích hoạt khi người dùng nói: "quét email này", "lên lịch họp", "thêm sự kiện lịch".</span>\n<span class="c">---</span>\n\n<span class="c"># Quy trình thực hiện</span>\n1. Khi được kích hoạt, hãy đọc và phân tích nội dung email đang mở trên tab trình duyệt hiện tại (Gmail hoặc Outlook Web).\n2. Xác định xem email có nhắc tới sự kiện, lịch hẹn, lịch họp, hay mốc thời gian cụ thể nào cần lên lịch hay không.\n3. Trích xuất thông tin chi tiết của sự kiện:\n   - **Tiêu đề sự kiện**: Tên cuộc họp, sự kiện hoặc lịch hẹn.\n   - **Thời gian**: Ngày thi/họp, giờ bắt đầu và giờ kết thúc (nếu không ghi giờ kết thúc, mặc định thời lượng là 1 giờ).\n   - **Địa điểm**: Địa điểm thực tế hoặc Link họp trực tuyến (Zoom, Google Meet, MS Teams nếu có).\n   - **Nội dung tóm tắt**: Mô tả ngắn gọn cuộc họp.\n4. Sử dụng **Google Calendar Connector** hoặc **Outlook Calendar Connector** đã kết nối để tự động tạo sự kiện lịch tương ứng.\n5. Trả về bảng thông tin sự kiện đã tạo và hiển thị link sự kiện lịch.',true)}
+    </div>
+  </div>
+</div>`,
+
+/* 21 ROADMAP / CLOSE */
 `<div class="wrap">
   <div class="shead reveal"><div class="kicker"><span class="dot"></span>Kết luận · Những điều cần lưu ý</div><h2>Các chú ý khi <span class="grad">triển khai</span></h2></div>
   <div class="grid g3 reveal">
@@ -812,8 +833,8 @@ const TOC=[
   {g:'Mở đầu',items:[[0,'Trang bìa'],[1,'Hai hướng tự động hoá']]},
   {g:'Phần 1 — Công cụ có sẵn & Skill',items:[[2,'Giới thiệu Phần 1'],[3,'1.1 · Lọc & phân loại email'],[4,'1.2 · Tổ chức sự kiện'],[5,'1.3 · Bản tin AI'],[6,'1.4 · Email phòng DVSV']]},
   {g:'Phần 2 — Tự xây công cụ (Vibecode)',items:[[7,'Giới thiệu Phần 2'],[8,'2.1 · Biên bản họp (Python)'],[9,'2.2 · Nhắc lịch coi thi (Python)'],[10,'Hiệu quả: thủ công vs AI']]},
-  {g:'Hướng dẫn chi tiết',items:[[11,'Giới thiệu hướng dẫn'],[12,'Chọn đúng công cụ'],[13,'① Công thức prompt'],[14,'① Tạo skill cho Cowork'],[15,'① Mẫu SKILL.md'],[16,'② Vibecode Python/npm'],[17,'③ Chỉnh sửa & vận hành'],[18,'Harness — khung kỹ thuật'],[19,'Phân quyền AI (L0–L5)']]},
-  {g:'Kết',items:[[20,'Các chú ý khi triển khai']]}
+  {g:'Hướng dẫn chi tiết',items:[[11,'Giới thiệu hướng dẫn'],[12,'Chọn đúng công cụ'],[13,'① Công thức prompt'],[14,'① Tạo skill cho Cowork'],[15,'① Mẫu SKILL.md'],[16,'② Vibecode Python/npm'],[17,'③ Chỉnh sửa & vận hành'],[18,'Harness — khung kỹ thuật'],[19,'Phân quyền AI (L0–L5)'],[20,'④ Thực hành: Tạo Skill']]},
+  {g:'Kết',items:[[21,'Các chú ý khi triển khai']]}
 ];
 
 /* ============ BUILD ============ */
