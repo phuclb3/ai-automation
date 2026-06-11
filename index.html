@@ -20,13 +20,14 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Ari
   background:radial-gradient(ellipse at 50% 42%,rgba(7,10,20,0) 30%,rgba(7,10,20,.55) 74%,rgba(7,10,20,.94) 100%);}
 
 #deck{position:relative;z-index:2;height:100vh;width:100vw;overflow:hidden;}
-.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:flex-start;
   padding:clamp(28px,5vw,90px);opacity:0;transform:translateY(24px) scale(.99);
   transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .slide.active{display:flex;opacity:1;transform:none;}
 .slide:focus{outline:none;}
 .slide.doc{padding-top:0;padding-bottom:84px;}
 .slide.doc.active{display:block !important;height:100vh !important;max-height:100vh !important;overflow-y:auto !important;transform:none !important;transition:none !important;}
+.slide.center.active{display:flex !important;justify-content:center !important;align-items:center !important;}
 .wrap{width:100%;max-width:1140px;margin:0 auto;}
 
 
@@ -221,6 +222,208 @@ ul.clean li b{color:#fff}
 .slide.active .reveal:nth-child(2){animation-delay:.07s}
 .slide.active .reveal:nth-child(3){animation-delay:.14s}
 @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* folder tree view */
+.folder-tree {
+  background: rgba(12, 18, 38, 0.65);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 18px 0;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  font-family: inherit;
+  position: relative;
+}
+.folder-tree ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.folder-tree li {
+  margin: 0;
+  padding: 6px 0 6px 28px;
+  position: relative;
+  font-size: 14px;
+  color: #cdd8f2;
+}
+.folder-tree li::before {
+  content: "" !important;
+  position: absolute;
+  left: 0;
+  top: 17px;
+  width: 20px;
+  height: 1px;
+  border-top: 1.5px solid var(--line2);
+}
+.folder-tree li::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -6px;
+  bottom: 0;
+  width: 1px;
+  border-left: 1.5px solid var(--line2);
+}
+.folder-tree li:last-child::after {
+  height: 24px;
+}
+.folder-tree ul ul {
+  margin-left: 6px;
+}
+.folder-tree .folder-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  color: var(--text);
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid transparent;
+}
+.folder-tree .folder-name:hover {
+  background: rgba(53, 208, 238, 0.08);
+  border-color: rgba(53, 208, 238, 0.2);
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(53, 208, 238, 0.1);
+}
+.folder-tree .root-folder > .folder-name {
+  font-weight: 700;
+  color: #fff;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+.folder-tree .sub-folder > .folder-name {
+  color: var(--violet);
+}
+.folder-tree .leaf-folder > .folder-name {
+  color: #cdd8f2;
+}
+.folder-tree .icon {
+  font-size: 16px;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.folder-tree .folder-name:hover .icon {
+  transform: scale(1.2);
+}
+
+/* agent pipeline flow chart */
+.agent-pipeline {
+  background: rgba(12, 18, 38, 0.6);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 18px 0;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  font-family: inherit;
+}
+.pipeline-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.pipeline-node {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line2);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+  min-width: 240px;
+  position: relative;
+  transition: all 0.3s;
+}
+.pipeline-node:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 0 15px rgba(53, 208, 238, 0.15);
+  transform: translateY(-2px);
+}
+.pipeline-node.director {
+  border-color: var(--cyan);
+  background: rgba(53, 208, 238, 0.05);
+  font-weight: 700;
+}
+.pipeline-arrow {
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(180deg, var(--cyan), var(--violet));
+}
+.pipeline-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  background: rgba(0,0,0,0.2);
+  padding: 12px 18px;
+  border-radius: 8px;
+  border-left: 3px solid var(--violet);
+  margin: 8px 0;
+  width: 100%;
+  max-width: 520px;
+}
+.pipeline-steps .step {
+  font-size: 13.5px;
+  color: #cdd8f2;
+  line-height: 1.55;
+}
+.pipeline-steps .step b {
+  color: var(--cyan);
+}
+.pipeline-subs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+}
+@media (max-width: 880px) {
+  .pipeline-subs {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .pipeline-subs {
+    grid-template-columns: 1fr;
+  }
+}
+.sub-node {
+  background: rgba(155, 140, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.sub-node:hover {
+  border-color: var(--violet);
+  box-shadow: 0 0 15px rgba(155, 140, 255, 0.15);
+  transform: translateY(-3px);
+}
+.sub-node .sub-title {
+  font-weight: 700;
+  color: var(--violet);
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.sub-node .sub-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.sub-node .sub-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-top: 8px;
+  color: #fff;
+  border: 1px solid var(--line);
+}
 </style>
 </head>
 <body>
@@ -325,11 +528,14 @@ const slides = [
     save:'Tiết kiệm ~80% ≈ 15 giờ công/tháng',
     note:'Ước tính: 40–60 email/ngày, 22 ngày làm việc/tháng.'}})}
     <div>${acc([
-      {t:'Kết nối hộp thư & công cụ',s:'Mở Claude Cowork, kết nối hộp thư',b:'<ul><li>Đối với <b>Gmail</b>: Mở <b>Claude Cowork</b> → <b>Customize → Connectors</b> → kết nối Gmail và cấp quyền.</li><li>Đối với <b>Outlook</b>: Do Cowork không kết nối trực tiếp được Outlook trong mục Connectors, bạn phải sử dụng <b>ứng dụng Outlook (Outlook App)</b> trên máy tính để agent tương tác.</li><li><b>Tạo sẵn các thư mục (folder)</b> trong ứng dụng Email tương ứng với danh sách nhãn: <code>Sinh viên · Công văn · Nội bộ · Khẩn · Spam</code>.</li><li>Nếu là văn bản dạng file: chọn (mount) thư mục chứa file để Claude đọc được.</li></ul>'+shot('cowork-connectors.png','Giao diện kết nối trong Claude Cowork (chỉ dùng cho Gmail)')},
-      {t:'Ra lệnh phân loại & di chuyển',s:'Dán prompt — đọc thư, file đính kèm & di chuyển',b:'<ul><li>Dán câu lệnh dưới đây vào ô chat của Cowork để agent tự động đọc nội dung email, đọc văn bản đính kèm, phân loại và di chuyển vào thư mục tương ứng.</li></ul>'+code('PROMPT · Phân loại & Di chuyển email','<span class="c"># Vai trò</span>\nBạn là trợ lý phân loại email tự động của một phòng ban tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nQuét các email CHƯA ĐỌC trong 24h qua. Với mỗi email:\n1. Đọc kỹ tiêu đề, nội dung email và đọc cả nội dung các file văn bản đính kèm (PDF, Word, Ảnh... nếu có).\n2. Phân tích nội dung để gắn 1 nhãn phù hợp: [Sinh viên][Công văn][Nội bộ][Khẩn][Spam].\n3. Tự động di chuyển email đó vào thư mục (folder) đã setup sẵn trên hộp thư có tên tương ứng với nhãn (Ví dụ: nhãn [Sinh viên] chuyển vào folder "Sinh viên", nhãn [Spam] chuyển vào folder "Spam"...).\n4. Tóm tắt nội dung email trong 1 câu (≤25 từ) và đề xuất hành động cần làm.\n\n<span class="c"># Quy tắc phân loại</span>\n- "Khẩn" nếu có hạn xử lý trong 48h hoặc gửi từ Ban Giám hiệu.\n- Email liên quan đến học vụ, điểm số, học phí hoặc đính kèm danh sách SV -> luôn phân vào folder "Sinh viên".\n- Email từ các phòng ban khác trong trường -> luôn phân vào folder "Nội bộ".\n- Tên miền lạ + link rút gọn -> nghi Spam, di chuyển ngay vào folder "Spam" và không mở link.\n\n<span class="c"># Đầu ra</span>\nBảng tổng hợp: | Người gửi | Tiêu đề | Nhãn (Folder di chuyển) | Tóm tắt | Hành động | Trạng thái di chuyển |')},
-      {t:'Xem kết quả & tinh chỉnh',s:'Sửa quy tắc nếu phân loại chưa chính xác',b:'<ul><li>Kiểm tra trạng thái di chuyển email trong bảng tổng hợp xem đã vào đúng folder chưa.</li><li>Nếu một loại email bị phân nhãn sai: Thêm quy tắc chi tiết cho agent, ví dụ: <code>Văn bản đính kèm có từ "Kế hoạch tuyển sinh" → luôn phân vào folder "Công văn".</code></li></ul><div class="note">Mẹo: Trong vài ngày đầu, bạn có thể bảo agent chỉ "đề xuất di chuyển folder" và in bảng kết quả để kiểm tra trước, sau khi hoạt động chính xác 100% thì mới cho phép agent tự động thực hiện thao tác di chuyển (Move).</div>'},
+      {t:'Kết nối hộp thư & công cụ',s:'Mở Claude Cowork, kết nối hộp thư',b:'<ul><li>Đối với <b>Gmail</b>: Mở <b>Claude Cowork</b> → <b>Customize → Connectors</b> → kết nối Gmail và cấp quyền.</li><li>Đối với <b>Outlook</b>: Do Cowork không kết nối trực tiếp được Outlook trong mục Connectors, bạn cần <b>cho phép (Allow) Cowork điều khiển trình duyệt web</b> và <b>mở Outlook trên trình duyệt (Outlook Web)</b> để agent tự động thao tác trực tiếp trên đó.</li><li><b>Tạo sẵn cấu trúc thư mục (folder)</b> trong ứng dụng Email để agent di chuyển email vào đúng vị trí:</li></ul><div class="folder-tree"><ul><li class="root-folder"><span class="folder-name"><span class="icon">📁</span>Mail báo của ticket ban hành</span></li><li class="root-folder"><span class="folder-name"><span class="icon">📁</span>Mail có đính kèm văn bản</span><ul><li class="sub-folder"><span class="folder-name"><span class="icon">📂</span>VB đến</span><ul><li class="sub-folder"><span class="folder-name"><span class="icon">📁</span>Phân hiệu</span><ul><li class="leaf-folder"><span class="folder-name">FPLCT</span></li><li class="leaf-folder"><span class="folder-name">FSCCT</span></li><li class="leaf-folder"><span class="folder-name">FSCST</span></li><li class="leaf-folder"><span class="folder-name">FSCHG</span></li></ul></li><li class="sub-folder"><span class="folder-name"><span class="icon">📁</span>VBĐ của HN</span><ul><li class="leaf-folder"><span class="folder-name">CTY Giáo dục</span></li><li class="leaf-folder"><span class="folder-name">CĐ FPL</span></li><li class="leaf-folder"><span class="folder-name">ĐH FPT</span></li></ul></li></ul></li><li class="sub-folder"><span class="folder-name"><span class="icon">📂</span>VB đi</span><ul><li class="sub-folder"><span class="folder-name"><span class="icon">📁</span>Phân hiệu</span><ul><li class="leaf-folder"><span class="folder-name">FPLCT</span></li><li class="leaf-folder"><span class="folder-name">FSCCT</span></li><li class="leaf-folder"><span class="folder-name">FSCST</span></li><li class="leaf-folder"><span class="folder-name">FSCHG</span></li></ul></li><li class="leaf-folder"><span class="folder-name"><span class="icon">📁</span>Quyết định</span></li><li class="leaf-folder"><span class="folder-name"><span class="icon">📁</span>VB có tên loại: Công văn, báo cáo, tờ trình,...</span></li><li class="leaf-folder"><span class="folder-name"><span class="icon">📁</span>Biên bản</span></li><li class="leaf-folder"><span class="folder-name"><span class="icon">📁</span>Nghị quyết</span></li></ul></li></ul></li></ul></div><ul><li>Nếu là văn bản dạng file: chọn (mount) thư mục chứa file để Claude đọc được.</li></ul>'+shot('media__1781168955619.png','Giao diện cài đặt Connectors trong Claude Cowork')},
+      {t:'Ra lệnh phân loại & di chuyển',s:'Dán prompt — đọc thư, file đính kèm & di chuyển',b:'<ul><li>Dán câu lệnh bên dưới vào ô chat của Cowork để agent tự động đọc nội dung email, đọc văn bản đính kèm, phân loại và di chuyển vào thư mục tương ứng.</li></ul>'+shot('media__1781166094447.png','Giao diện xây dựng và đóng gói Skill phân loại email tự động trong Cowork')},
+      {t:'Xem kết quả & tinh chỉnh',s:'Sửa quy tắc nếu phân loại chưa chính xác',b:'<ul><li>Kiểm tra trạng thái di chuyển email trong bảng tổng hợp xem đã vào đúng folder chưa.</li><li>Nếu một loại email bị phân nhãn sai: Thêm quy tắc chi tiết cho agent, ví dụ: <code>Văn bản đính kèm của phân hiệu FPLCT → luôn phân vào folder "Mail có đính kèm văn bản/VB đến/Phân hiệu/FPLCT".</code></li></ul>'+shot('media__1781166249863.png','Giao diện Cowork tương tác hỏi ý kiến người dùng (Human-in-the-loop) để phân loại chính xác các email chưa có quy tắc rõ ràng')+'<div class="note">Mẹo: Trong vài ngày đầu, bạn có thể bảo agent chỉ "đề xuất di chuyển folder" và in bảng kết quả để kiểm tra trước, sau khi hoạt động chính xác 100% thì mới cho phép agent tự động thực hiện thao tác di chuyển (Move).</div>'},
       {t:'Lên lịch chạy tự động',s:'Mỗi sáng 7:00 không cần bấm tay',b:'<ul><li>Bảo Cowork: <i>"Chạy việc phân loại này mỗi sáng lúc 7:00 và gửi cho tôi bảng tổng hợp."</i></li><li>Hệ thống tạo một <b>Scheduled task</b> chạy lặp lại.</li></ul>'+shot('cowork-schedule-list.png','Tác vụ định kỳ (Scheduled tasks) trong Claude Cowork')}
     ])}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Phân loại & Di chuyển email','<span class="c"># Vai trò</span>\nBạn là trợ lý phân loại email tự động của một phòng ban tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nQuét các email nhận được trong vòng 7 ngày qua. Với mỗi email:\n1. Đọc kỹ thông tin gồm: Người gửi, Tiêu đề, Nội dung chi tiết của email và đọc cả nội dung toàn bộ văn bản đính kèm (PDF, Word, Excel, Ảnh... nếu có).\n2. Phân tích nội dung để xác định và phân loại email vào đúng cấu trúc thư mục quy định.\n3. Tự động di chuyển email đó vào đúng thư mục con tương ứng đã được thiết lập sẵn trên hộp thư.\n4. Tóm tắt nội dung email trong 1 câu (≤25 từ) và đề xuất hành động cần làm.\n\n<span class="c"># Cấu trúc thư mục đích</span>\n- **Mail báo của ticket ban hành**: Dành cho các mail thông báo về ticket ban hành văn bản.\n- **Mail có đính kèm văn bản**:\n  - **VB đến**:\n    - **Phân hiệu**: Di chuyển vào thư mục tương ứng nếu là văn bản đến của phân hiệu: `FPLCT`, `FSCCT`, `FSCST`, `FSCHG`.\n    - **VBĐ của HN**: Di chuyển vào thư mục tương ứng nếu là văn bản đến từ Hà Nội: `CTY Giáo dục`, `CĐ FPL`, `ĐH FPT`.\n  - **VB đi**:\n    - **Phân hiệu**: Di chuyển vào thư mục tương ứng nếu là văn bản đi của phân hiệu: `FPLCT`, `FSCCT`, `FSCST`, `FSCHG`.\n    - **Quyết định**: Cho các văn bản đi thuộc loại Quyết định.\n    - **VB có tên loại: Công văn, báo cáo, tờ trình,...**: Cho các văn bản đi có tên loại cụ thể (Công văn, báo cáo, tờ trình,...).\n    - **Biên bản**: Cho các biên bản họp, làm việc.\n    - **Nghị quyết**: Cho các nghị quyết ban hành.\n\n<span class="c"># Quy tắc & Lưu ý quan trọng</span>\n- CHỈ quét và phân loại các email nhận được trong vòng 7 ngày gần nhất.\n- GIỮ NGUYÊN TRẠNG THÁI CHƯA ĐỌC: Nếu email trước khi quét đang ở trạng thái CHƯA ĐỌC (Unread), sau khi đọc để phân loại và di chuyển thư mục, bạn BẮT BUỘC phải giữ nguyên hoặc đánh dấu lại trạng thái CHƯA ĐỌC (Unread) cho email đó.\n- Đọc kỹ cả nội dung của các file đính kèm (nếu có) để nhận diện chính xác loại văn bản (đến hay đi, quyết định, biên bản, nghị quyết...) và thuộc đơn vị/phân hiệu nào.\n\n<span class="c"># Đầu ra</span>\nBảng tổng hợp: | Người gửi | Tiêu đề | Nhãn (Thư mục đích) | Tóm tắt | Hành động | Trạng thái email (Chưa đọc) | Trạng thái di chuyển |')}
   </div>
 </div>`,
 
@@ -337,16 +543,19 @@ const slides = [
 `<div class="wrap">
   <div class="shead reveal"><div class="kicker"><span class="dot"></span>Case 1.2 · Tổ chức sự kiện</div><h2>Hệ thống Multi-Agent <span class="grad">tổ chức sự kiện tự động</span></h2></div>
   <div class="caserow reveal">
-    ${spec({ic:'🎪',lead:'Hệ thống Multi-Agent chạy trong Antigravity phối hợp tự động tổ chức sự kiện: làm rõ thông tin, phân rã công việc cho các agent phụ (checklist, plan, kịch bản, thiết kế ấn phẩm với Canva MCP) và hiển thị tiến độ trên dashboard real-time.',m:[['5 Agents','Chạy song song liên tục'],['Real-time','Dashboard giám sát']],tags:['Antigravity','Canva MCP','Multi-Agent System'],
+    ${spec({ic:'🎪',lead:'Hệ thống Multi-Agent: 1 agent tổng (Event Director) tự động điều phối 4 agent con chạy song song và liên tục để chuẩn bị trọn gói kế hoạch, kịch bản, và ấn phẩm thiết kế cho sự kiện.',m:[['5 Agents','Chạy song song liên tục'],['Real-time','Dashboard giám sát']],tags:['Antigravity','Canva MCP','Todoist MCP','Multi-Agent System'],
     cmp:{rows:[['Bộ tài liệu + ấn phẩm','~3 ngày công soạn tay','3–4 giờ duyệt & chỉnh'],['Mỗi sự kiện','~24 giờ công','~4 giờ công']],
     save:'Tiết kiệm ~85% ≈ 20 giờ công/sự kiện',
     note:'Ước tính cho sự kiện ~500 khách (kế hoạch, checklist, kịch bản, thiết kế ấn phẩm).'}})}
     <div>${acc([
-      {t:'1. Khởi chạy & Thiết lập Agents',s:'Thiết lập hệ thống 5 Agents chạy trong Antigravity',b:'<ul><li>Khởi tạo <b>Agent tổng điều phối (Coordinator Agent)</b> và 4 Agent phụ chuyên trách.</li><li>Kết nối <b>Canva MCP</b> để thiết kế hình ảnh tự động.</li><li>Bật Dashboard quản lý để giám sát tiến độ hoạt động real-time của từng agent.</li></ul>'+code('PYTHON · Cấu hình hệ thống Multi-Agent','<span class="k">from</span> agents <span class="k">import</span> CoordinatorAgent, SubAgent\n<span class="k">from</span> mcp <span class="k">import</span> CanvaMCPConnector\n\n<span class="c"># Thiết lập các Agent chuyên trách</span>\nplanning_agent = SubAgent(name=<span class="s">"Planning Agent"</span>, role=<span class="s">"Lập checklist & timeline"</span>)\ndesign_agent = SubAgent(name=<span class="s">"Design Agent"</span>, role=<span class="s">"Thiết kế Canva MCP"</span>)\ncontent_agent = SubAgent(name=<span class="s">"Content Agent"</span>, role=<span class="s">"Soạn kịch bản & thư mời"</span>)\npr_agent = SubAgent(name=<span class="s">"PR Agent"</span>, role=<span class="s">"Lập plan truyền thông"</span>)\n\ncoordinator = CoordinatorAgent(\n    name=<span class="s">"Event Coordinator"</span>,\n    sub_agents=[planning_agent, design_agent, content_agent, pr_agent],\n    mcp_connectors=[CanvaMCPConnector()]\n)',true)},
-      {t:'2. Agent Tổng làm rõ yêu cầu (Interview & Brief)',s:'Phỏng vấn để làm rõ các thông tin còn thiếu',b:'<ul><li>Khi được giao tổ chức sự kiện với thông tin sơ sài (ví dụ: "Làm ngày hội tuyển sinh"), <b>Agent Tổng</b> sẽ kiểm tra các thông tin cốt lõi.</li><li>Nếu thiếu, Agent Tổng sẽ hỏi kỹ lại người dùng về: <b>Danh sách khách mời, diễn giả, thời gian, địa điểm, thành phần tham dự...</b> trước khi phân việc.</li></ul>'+code('PROMPT · Phỏng vấn làm rõ thông tin','<span class="c"># Phân tích Event Brief</span>\nBạn là Coordinator Agent. Hãy rà soát yêu cầu tổ chức sự kiện của người dùng.\nNếu thiếu bất kỳ thông tin nào dưới đây, hãy đặt câu hỏi lịch sự để làm rõ:\n- Đối tượng tham dự & số lượng dự kiến?\n- Danh sách khách mời đặc biệt & Diễn giả (nếu có)?\n- Thời gian, địa điểm cụ thể?\n- Ngân sách giới hạn?\n\nChỉ khi người dùng cung cấp đủ, mới kích hoạt các Sub-agents.',true)},
-      {t:'3. Phối hợp các Agent phụ & Canva MCP',s:'Vận hành song song và liên tục để thiết kế & viết nội dung',b:'<ul><li>Các Sub-agents chạy đồng thời và liên tục phối hợp chéo với nhau:</li><li><b>Planning Agent</b>: Dựng checklist hậu cần và timeline đếm ngược.</li><li><b>Content & PR Agent</b>: Viết kịch bản MC chi tiết, draft thư mời và plan truyền thông.</li><li><b>Design Agent</b>: Kết nối <b>Canva MCP</b> tự động tạo và xuất bản các ấn phẩm đúng kích thước yêu cầu: <code>Ảnh post Facebook (1200x628)</code>, <code>Backdrop sân khấu</code>, và <code>Standee điện tử (1080x1920)</code> dựa trên danh sách diễn giả/nội dung từ Content Agent.</li></ul>'+code('MCP CALL · Tạo Standee điện tử trên Canva','<span class="c"># Gọi Canva MCP tạo standee điện tử 1080x1920</span>\nawait design_agent.call_mcp(\n    server=<span class="s">"canva"</span>,\n    tool=<span class="s">"create-design"</span>,\n    arguments={\n        <span class="s">"title"</span>: <span class="s">"Standee Điện Tử - Ngày hội tuyển sinh 2026"</span>,\n        <span class="s">"width"</span>: 1080,\n        <span class="s">"height"</span>: 1920,\n        <span class="s">"template_id"</span>: <span class="s">"fptu_standee_template_v1"</span>,\n        <span class="s">"variables"</span>: {\n            <span class="s">"title"</span>: content_agent.shared_data[<span class="s">"event_title"</span>],\n            <span class="s">"speaker"</span>: content_agent.shared_data[<span class="s">"speakers"</span>],\n            <span class="s">"time"</span>: coordinator.shared_data[<span class="s">"time"</span>]\n        }\n    }\n)',true)},
-      {t:'4. Dashboard quản lý & Tiến độ Real-time',s:'Giám sát trạng thái hoạt động của các Agents trong Antigravity',b:'<ul><li>Dashboard real-time hiển thị sơ đồ quan hệ và trạng thái của từng agent: <code>Idle</code>, <code>Working</code>, <code>Waiting for Input</code>, <code>Completed</code>.</li><li>Theo dõi tiến độ hoàn thành checklist thời gian thực.</li><li><b>Human-in-the-loop</b>: Người dùng có thể xem trước và duyệt các bản thảo kịch bản hoặc thiết kế hình ảnh từ Canva ngay trên Dashboard trước khi các Agents xuất bản chính thức.</li></ul>'+shot('cowork-schedule-list.png','Dashboard quản lý tác vụ và tiến độ các agents trong hệ thống')}
+      {t:'1. Thiết lập & Phân rã công việc (Event Director Pipeline)',s:'Skill tổng — intake, brief, điều phối, nghiệm thu',b:'<ul><li>Khởi động <b>Agent tổng (Event Director)</b> quản lý dự án bằng prompt chứa tư duy phát triển phần mềm (Dev) và quản trị dự án.</li><li>Thiết lập pipeline tự động hóa: Kiểm tra thông tin, tạo cấu trúc repo dự án, kích hoạt và giám sát các agent con chạy song song.</li></ul><div class="note">Mô hình hoạt động của Pipeline điều phối sự kiện:</div><div class="agent-pipeline"><div class="pipeline-flow"><div class="pipeline-node director">👑 Event Director (event-pipeline)</div><div class="pipeline-arrow"></div><div class="pipeline-steps"><div class="step">1️⃣ <b>Hỏi kỹ thông tin thiếu (Intake)</b>: Khách mời, diễn giả, thời gian, địa điểm, thành phần.</div><div class="step">2️⃣ <b>Tạo tài liệu sự kiện</b>: Khởi tạo <code>event-brief.md</code> and <code>status.json</code>.</div><div class="step">3️⃣ <b>Spawn 4 Agent con song song</b>: Giao việc tự động cho các agent phụ.</div><div class="step">4️⃣ <b>Nghiệm thu & Tóm tắt</b>: Gom câu hỏi mở, cập nhật <code>status.json</code>, xuất bản <code>summary.md</code>.</div></div><div class="pipeline-arrow"></div><div class="pipeline-subs"><div class="sub-node"><div class="sub-title">📋 Checklist Agent</div><div class="sub-desc">Lập checklist công việc chi tiết từ T-30 đến D+7</div><div class="sub-tag">Todoist MCP</div></div><div class="sub-node"><div class="sub-title">🎨 Design Agent</div><div class="sub-desc">Thiết kế FB Cover, Ảnh 1920x1080, Standee 1080x1920</div><div class="sub-tag">Canva MCP</div></div><div class="sub-node"><div class="sub-title">📢 Media Plan Agent</div><div class="sub-desc">Kế hoạch truyền thông 3 giai đoạn + KPI + Caption mẫu</div><div class="sub-tag">Prompts</div></div><div class="sub-node"><div class="sub-title">🎤 MC Script Agent</div><div class="sub-desc">Soạn kịch bản MC chi tiết từng phút + Phương án dự phòng</div><div class="sub-tag">Prompts</div></div></div></div></div>'+shot('media__1781169141215.png','Kết quả tạo thành công hệ thống 5 Skills và tài liệu Readme điều phối trong Claude Cowork')},
+      {t:'2. Phỏng vấn & Làm rõ yêu cầu (Event Intake)',s:'Tự động hỏi kỹ thông tin liên quan nếu chưa cung cấp đủ',b:'<ul><li>Khi nhận yêu cầu từ người dùng (Ví dụ: <i>"Tổ chức talkshow AI ngày 20/7..."</i>), Agent tổng sẽ kiểm tra tính đầy đủ của thông tin trước khi phân việc xuống agent phụ.</li><li>Nếu thiếu, Agent tổng bắt buộc phải phỏng vấn ngược lại người dùng để lấy đủ thông tin: <b>Danh sách khách mời, diễn giả, thời gian, địa điểm, thành phần tham dự</b>.</li></ul>'+shot('media__1781169218386.png','Giao diện phỏng vấn làm rõ thông tin sự kiện (Intake) trong Claude Cowork')},
+      {t:'3. Vận hành song song các Agent phụ & Tích hợp MCP',s:'4 Agent phụ chạy đồng thời và liên tục đến khi hoàn thành',b:'<ul><li>Các Sub-agents chạy đồng thời, tự động phối hợp chéo dữ liệu và gọi các công cụ kết nối bên ngoài (MCP):</li><li><b>Checklist Agent</b>: Kết nối <b>Todoist MCP</b> tự động tạo dự án sự kiện và lên checklist chi tiết từ T-30 đến D+7.</li><li><b>Design Agent</b>: Kết nối <b>Canva MCP</b> để thiết kế hình ảnh tự động theo các chuẩn kích thước yêu cầu: <code>Ảnh Cover Facebook (1200x628)</code>, <code>Ảnh Banner (1920x1080)</code>, và <code>Standee điện tử (1080x1920)</code>.</li><li><b>Media Plan Agent</b>: Lên kế hoạch truyền thông 3 giai đoạn (Trước, Trong, Sau sự kiện), bao gồm KPI và bài đăng nháp kèm caption.</li><li><b>MC Script Agent</b>: Soạn kịch bản MC chi tiết theo timeline từng phút và lập phương án dự phòng (backup plans).</li></ul>'+code('MCP CALL · Design Agent gọi Canva MCP','<span class="c"># Gọi Canva MCP tạo banner 1920x1080 & standee 1080x1920</span>\nawait design_agent.call_mcp(\n    server=<span class="s">"canva"</span>,\n    tool=<span class="s">"create-design"</span>,\n    arguments={\n        <span class="s">"title"</span>: <span class="s">"Banner 1920x1080 - Talkshow AI"</span>,\n        <span class="s">"width"</span>: 1920,\n        <span class="s">"height"</span>: 1080,\n        <span class="s">"variables"</span>: {\n            <span class="s">"title"</span>: event_brief.event_name,\n            <span class="s">"speakers"</span>: event_brief.speakers,\n            <span class="s">"datetime"</span>: event_brief.time,\n            <span class="s">"location"</span>: event_brief.location\n        }\n    }\n)',true)+shot('media__1781169249869.png','Giai đoạn chạy đồng loạt song song của 4 agents phụ trong Claude Cowork')},
+      {t:'4. Nghiệm thu & Giám sát Dashboard Real-time',s:'Event Director nghiệm thu kế hoạch & theo dõi tiến độ',b:'<ul><li><b>Nghiệm thu dự án</b>: Event Director kiểm tra đầu ra của các agent phụ, ghi nhận các điểm mở (open issues), cập nhật trạng thái trong <code>status.json</code> và báo cáo nghiệm thu vào <code>summary.md</code>.</li><li><b>Giám sát Real-time & Giao diện kết quả</b>: Xem danh sách các tài liệu được tạo ra (Summary, Brief, Checklist, Media plan, MC Script...) trực tiếp trong phần Live Artifacts và duyệt kịch bản MC chi tiết trực quan ở cột bên phải.</li></ul>'+shot('media__1781169366493.png','Giao diện nghiệm thu dự án sự kiện và kịch bản MC chi tiết sau khi chạy demo')+shot('media__1781169655570.png','Dự án sự kiện và checklist công việc tự động tạo trên Todoist')+shot('media__1781169635841.png','Ảnh Cover Facebook sự kiện được tự động thiết kế trên Canva')}
     ])}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Tư duy Dev & Quản trị (Event Director)','<span class="c"># Vai trò</span>\nBạn là Event Director (Trưởng ban tổ chức sự kiện) tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Workflow Lập Kế hoạch & Điều phối (Tư duy Dev/Quản trị)</span>\n\n## BƯỚC 1: KIỂM TRA ĐẦU VÀO (INTAKE)\n- Phân tích yêu cầu của User và kiểm tra các biến thông tin sau:\n  {\n    "event_name": string or null,\n    "time": datetime or null,\n    "location": string or null,\n    "speakers": array of strings or null,\n    "audience": string or null\n  }\n- Nếu có bất kỳ biến nào là `null`, bạn KHÔNG ĐƯỢC tự suy diễn. Hãy phản hồi lịch sự hỏi rõ User từng thông tin còn thiếu này trước khi bắt đầu.\n\n## BƯỚC 2: KHỞI TẠO TÀI LIỆU DỰ ÁN\n- Khi thông tin đã đầy đủ (mọi biến khác `null`), hãy tạo thư mục dự án `events/{{event-slug}}/`.\n- Ghi thông tin Intake vào file `event-brief.md`.\n- Khởi tạo file trạng thái `status.json` với cấu trúc:\n  {\n    "status": "running",\n    "sub_agents": {\n      "checklist": "pending",\n      "design": "pending",\n      "media_plan": "pending",\n      "mc_script": "pending"\n    }\n  }\n\n## BƯỚC 3: PHÂN RÃ CÔNG VIỆC (SPAWN SUB-AGENTS)\nKích hoạt song song 4 Sub-agents chuyên trách dưới đây để thực hiện nhiệm vụ.\n\n## BƯỚC 4: NGHIỆM THU (QA)\n- Thu thập kết quả trả về từ 4 sub-agents.\n- Gom các câu hỏi mở cần người dùng duyệt.\n- Cập nhật `status.json` thành "completed" và tạo bản tóm tắt `summary.md`.')}
   </div>
 </div>`,
 
@@ -360,11 +569,14 @@ const slides = [
     note:'Ước tính: 10 tin/số từ 8 nguồn, gửi hằng ngày.'}})}
     <div>${acc([
       {t:'1. Lên lịch chạy (Scheduled Trigger 8:00 sáng)',s:'Tự động kích hoạt mỗi ngày đúng giờ đi làm',b:'<ul><li>Hệ thống được thiết lập chạy định kỳ tự động lúc <b>8:00 sáng</b> mỗi ngày.</li><li>Agent tự động khởi động quy trình mà không cần con người nhấp chuột.</li></ul>'},
-      {t:'2. Sưu tập tin tức & Tóm tắt',s:'Thu thập từ 8 nguồn tin AI lớn nhất',b:'<ul><li>Agent tự động quét và thu thập tin tức nổi bật nhất trong 24h qua từ <b>8 nguồn AI uy tín</b>: OpenAI, Google AI, TechCrunch, VentureBeat, The Verge, Wired, MIT Tech Review và Hugging Face.</li><li>Dịch sang tiếng Việt và tóm tắt ngắn gọn tối đa <b>150 chữ cho mỗi tin</b>.</li></ul>'+code('PROMPT · Sưu tập & Tóm tắt tin AI','<span class="c"># Vai trò</span>\nBạn là trợ lý tổng hợp tin tức công nghệ của Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nThu thập tin tức AI nổi bật trong 24h qua từ 8 nguồn: OpenAI, Google, TechCrunch, VentureBeat, The Verge, Wired, MIT Tech Review, Hugging Face.\nVới mỗi tin tức:\n1. Tiêu đề tiếng Việt chuẩn xác.\n2. Tóm tắt nội dung chính ngắn gọn (~150 chữ).\n3. Bổ sung link bài viết gốc và link ảnh thumbnail (ảnh minh hoạ).')},
+      {t:'2. Sưu tập tin tức & Tóm tắt',s:'Thu thập từ 8 nguồn tin AI lớn nhất',b:'<ul><li>Agent tự động quét và thu thập tin tức nổi bật nhất trong 24h qua từ <b>8 nguồn AI uy tín</b>: OpenAI, Google AI, TechCrunch, VentureBeat, The Verge, Wired, MIT Tech Review và Hugging Face.</li><li>Dịch sang tiếng Việt và tóm tắt ngắn gọn tối đa <b>150 chữ cho mỗi tin</b>.</li></ul>'},
       {t:'3. Kiểm tra link & ảnh (Recheck)',s:'Xác minh tất cả đường dẫn trước khi gửi',b:'<ul><li><b>Bước kiểm định cực kỳ quan trọng</b>: Agent thực hiện kiểm tra tự động (HTTP request) đến toàn bộ các đường link nguồn và link ảnh.</li><li>Nếu phát hiện link bị lỗi (404, không truy cập được) hoặc ảnh hỏng, agent sẽ tự động tìm kiếm nguồn thay thế hoặc sử dụng ảnh mặc định của trường để tránh gửi nội dung lỗi.</li></ul>'+code('PYTHON · Script kiểm tra link & ảnh','<span class="k">import</span> requests\n\n<span class="k">def</span> <span class="f">recheck_assets</span>(news_list):\n    valid_news = []\n    <span class="k">for</span> news <span class="k">in</span> news_list:\n        <span class="c"># Kiểm tra link bài viết & link ảnh</span>\n        res_link = requests.head(news[<span class="s">"link"</span>], timeout=5)\n        res_img = requests.head(news[<span class="s">"image_url"</span>], timeout=5)\n        \n        <span class="k">if</span> res_link.status_code == 200 <span class="k">and</span> res_img.status_code == 200:\n            valid_news.append(news)\n        <span class="k">else</span>:\n            <span class="c"># Log lỗi hoặc thay ảnh dự phòng</span>\n            news[<span class="s">"image_url"</span>] = <span class="s">"assets/fptu_default.png"</span>\n            valid_news.append(news)\n    <span class="k">return</span> valid_news',true)},
       {t:'4. Build HTML (AINews.html)',s:'Dựng giao diện bản tin đẹp mắt',b:'<ul><li>Tổng hợp các bài viết đã qua kiểm duyệt vào file <code>AINews.html</code> dựa trên template responsive được chuẩn hoá.</li><li>Bố cục bao gồm: Header thương hiệu trường, các ô tin có ảnh đại diện, tóm tắt và nút xem chi tiết.</li></ul>'+shot('ainews-render.png','Giao diện bản tin AINews.html sau khi tự động build hoàn thiện')},
-      {t:'5. Gửi email qua Outlook (AppleScript/COM)',s:'Tự động hóa ứng dụng Outlook Desktop để gửi thư',b:'<ul><li>Agent gọi script hệ thống để điều khiển Outlook Desktop thực hiện gửi email trực tiếp tới danh sách đăng ký.</li></ul>'+code('APPLESCRIPT · Điều khiển Outlook (macOS)','<span class="k">tell</span> application <span class="s">"Microsoft Outlook"</span>\n    <span class="k">set</span> newMessage <span class="k">to</span> make new outgoing message with properties {subject:<span class="s">"Bản tin AI sáng nay"</span>, content:htmlContent}\n    make new recipient at newMessage with properties {email address:{address:<span class="s">"canbo@fpt.edu.vn"</span>}}\n    send newMessage\n<span class="k">end tell</span>')+'<div class="note"><b>Mẹo cho Windows:</b> Sử dụng thư viện <code>win32com.client</code> trong Python để thao tác tương tự với Outlook Desktop.</div>'}
+      {t:'5. Gửi email qua Outlook (AppleScript/COM)',s:'Tự động hóa ứng dụng Outlook Desktop để gửi thư',b:'<ul><li>Agent gọi script hệ thống để điều khiển Outlook Desktop thực hiện gửi email trực tiếp tới danh sách đăng ký.</li></ul>'+code('APPLESCRIPT · Điều khiển Outlook (macOS)','<span class="k">tell</span> application <span class="s">"Microsoft Outlook"</span>\n    <span class="k">set</span> newMessage <span class="k">to</span> make new outgoing message with properties {subject:<span class="s">"Bản tin AI sáng nay"</span>, content:htmlContent}\n    make new recipient at newMessage with properties {email address:{address:<span class="s">"canbo@fpt.edu.vn"</span>}}\n    send newMessage\n<span class="k">end tell</span>')+'<div class="note"><b>Mẹo cho Windows:</b> Sử dụng thư viện <code>win32com.client</code> trong Python để thao tác tương tự với Outlook Desktop.</div>'+shot('media__1781169901139.png','Giao diện hệ thống tự động chạy script và điều khiển Outlook gửi bản tin hằng ngày')+shot('media__1781169980998.png','Bản tin AI hiển thị thực tế trong hộp thư Outlook nhận được')}
     ])}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Sưu tập & Tóm tắt tin AI','<span class="c"># Vai trò</span>\nBạn là trợ lý tổng hợp tin tức công nghệ của Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nThu thập tin tức AI nổi bật trong 24h qua từ 8 nguồn: OpenAI, Google, TechCrunch, VentureBeat, The Verge, Wired, MIT Tech Review, Hugging Face.\nVới mỗi tin tức:\n1. Tiêu đề tiếng Việt chuẩn xác.\n2. Tóm tắt nội dung chính ngắn gọn (~150 chữ).\n3. Bổ sung link bài viết gốc và link ảnh thumbnail (ảnh minh hoạ).')}
   </div>
 </div>`,
 
@@ -379,10 +591,14 @@ const slides = [
     <div>${acc([
       {t:'1. SV gửi email & Hộp thư tự phân loại (Outlook Rule)',s:'Email từ sinh viên được tự động đẩy vào folder riêng',b:'<ul><li>Thiết lập một <b>Outlook Rule</b> để mọi email gửi đến từ sinh viên (dạng địa chỉ <code>2024xxx@fpt.edu.vn</code>) tự động được chuyển vào thư mục riêng mang tên <b>"Email Chua XL"</b>.</li><li>Việc này giúp lọc riêng email cần giải quyết của sinh viên ra khỏi các email hành chính khác của phòng ban.</li></ul>'},
       {t:'2. Skill quét folder & Đọc email',s:'Đọc và nhận diện nội dung câu hỏi',b:'<ul><li>Claude Cowork chạy một <b>Skill quét định kỳ</b> để tự động đọc tiêu đề, người gửi và nội dung chi tiết của từng email chưa xử lý trong folder <b>"Email Chua XL"</b>.</li></ul>'},
-      {t:'3. Khớp keyword & Tra cứu SOP (Knowledge)',s:'Phân loại câu hỏi và truy vấn kho quy chế',b:'<ul><li>Agent tiến hành đối chiếu từ khóa (keyword matching) để phân loại loại yêu cầu (Ví dụ: hỏi học phí, lịch học, đăng ký KTX, rút hồ sơ...).</li><li>Đồng thời, Agent truy vấn kho tri thức quy chế (<b>Knowledge SOP</b>) của trường để tìm các văn bản hướng dẫn xử lý và quy định tương ứng.</li></ul>'+code('PROMPT · Phân tích & Tìm quy định','<span class="c"># Phân tích nội dung email sinh viên</span>\nBạn là Trợ lý phòng Dịch vụ Sinh viên Trường ĐH FPT Cần Thơ.\nĐọc email dưới đây và thực hiện:\n1. Xác định từ khoá chính (Ví dụ: học phí, KTX, bảng điểm).\n2. Truy vấn tài liệu SOP đính kèm để tìm quy chế xử lý tương ứng.\n3. Đối chiếu xem sinh viên đã cung cấp đủ thông tin cần thiết chưa.\n\nEMAIL CỦA SV:\n"..."')},
-      {t:'4. Soạn email nháp (Draft-only Mode)',s:'Tự động soạn thư nháp cá nhân hóa',b:'<ul><li>Dựa vào quy định vừa tra cứu, Agent soạn email phản hồi hoàn chỉnh đúng theo mẫu quy chuẩn của phòng (điền sẵn Họ tên SV, MSSV, nội dung hướng dẫn chi tiết).</li><li><b>Chế độ thử nghiệm an toàn</b>: Skill được kích hoạt kèm cờ cấu hình <code>--draft-only</code>. Toàn bộ email do AI soạn sẽ chỉ được lưu vào mục <b>Drafts (Thư nháp)</b> trên Outlook chứ không tự động gửi đi.</li></ul>'+code('PROMPT · Soạn thư nháp an toàn','<span class="c"># Quy định soạn email</span>\nSoạn thư trả lời sinh viên dựa trên thông tin SOP đã tìm được:\n- Điền tên, MSSV của sinh viên.\n- Sử dụng template email phản hồi chuẩn của phòng.\n- Ghi rõ cán bộ hỗ trợ.\n\n<span class="c"># Ràng buộc xuất bản</span>\nLưu ý: Chỉ soạn nháp và đẩy vào mục Drafts trên Outlook. KHÔNG được phép gửi trực tiếp.')},
-      {t:'5. Cán bộ kiểm duyệt & Gửi (Draft + Send)',s:'Cán bộ rà soát 100% trước khi gửi chính thức',b:'<ul><li>Cán bộ phòng Dịch vụ Sinh viên mở mục <b>Drafts</b> trong Outlook Desktop để kiểm tra lại email AI đã soạn sẵn.</li><li>Nếu nội dung chuẩn xác và đầy đủ, cán bộ chỉ cần bấm nút <b>Send (Gửi)</b> thủ công trên Outlook. Quy trình này đảm bảo an toàn tuyệt đối và kiểm soát chất lượng 100%.</li></ul>'+shot('mailer2.png','Giao diện email do AI soạn sẵn nằm trong mục Drafts chờ cán bộ duyệt')+'<div class="note"><b>Lời khuyên thực tế:</b> Khi hệ thống chạy ổn định sau 2–4 tuần thử nghiệm và đạt độ tin cậy cao, có thể bỏ cờ <code>--draft-only</code> đối với các nhóm câu hỏi đơn giản (như in bảng điểm, lịch nghỉ, địa điểm học) để AI tự động gửi trực tiếp.</div>'}
+      {t:'3. Khớp keyword & Tra cứu SOP (Knowledge)',s:'Phân loại câu hỏi và truy vấn kho quy chế',b:'<ul><li>Agent tiến hành đối chiếu từ khóa (keyword matching) để phân loại loại yêu cầu (Ví dụ: hỏi học phí, lịch học, đăng ký KTX, rút hồ sơ...).</li><li>Đồng thời, Agent truy vấn kho tri thức quy chế (<b>Knowledge SOP</b>) của trường để tìm các văn bản hướng dẫn xử lý và quy định tương ứng.</li></ul>'},
+      {t:'4. Soạn email nháp (Draft-only Mode)',s:'Tự động soạn thư nháp cá nhân hóa',b:'<ul><li>Dựa vào quy định vừa tra cứu, Agent soạn email phản hồi hoàn chỉnh đúng theo mẫu quy chuẩn của phòng (điền sẵn Họ tên SV, MSSV, nội dung hướng dẫn chi tiết).</li><li><b>Chế độ thử nghiệm an toàn</b>: Skill được kích hoạt kèm cờ cấu hình <code>--draft-only</code>. Toàn bộ email do AI soạn sẽ chỉ được lưu vào mục <b>Drafts (Thư nháp)</b> trên Outlook chứ không tự động gửi đi.</li></ul>'},
+      {t:'5. Cán bộ kiểm duyệt & Gửi (Draft + Send)',s:'Cán bộ rà soát 100% trước khi gửi chính thức',b:'<ul><li>Cán bộ phòng Dịch vụ Sinh viên mở mục <b>Drafts</b> trong Outlook Desktop để kiểm tra lại email AI đã soạn sẵn.</li><li>Nếu nội dung chuẩn xác và đầy đủ, cán bộ chỉ cần bấm nút <b>Send (Gửi)</b> thủ công trên Outlook. Quy trình này đảm bảo an toàn tuyệt đối và kiểm soát chất lượng 100%.</li></ul>'+shot('media__1781170117521.png','Giao diện hệ thống báo cáo đã tự động tạo bản nháp thành công email phản hồi của sinh viên')+shot('mailer2.png','Giao diện email do AI soạn sẵn nằm trong mục Drafts chờ cán bộ duyệt')+'<div class="note"><b>Lời khuyên thực tế:</b> Khi hệ thống chạy ổn định sau 2–4 tuần thử nghiệm và đạt độ tin cậy cao, có thể bỏ cờ <code>--draft-only</code> đối với các nhóm câu hỏi đơn giản (như in bảng điểm, lịch nghỉ, địa điểm học) để AI tự động gửi trực tiếp.</div>'}
     ])}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px; display: flex; flex-direction: column; gap: 16px;">
+    ${code('PROMPT · Phân tích & Tìm quy định','<span class="c"># Phân tích nội dung email sinh viên</span>\nBạn là Trợ lý phòng Dịch vụ Sinh viên Trường ĐH FPT Cần Thơ.\nĐọc email dưới đây và thực hiện:\n1. Xác định từ khoá chính (Ví dụ: học phí, KTX, bảng điểm).\n2. Truy vấn tài liệu SOP đính kèm để tìm quy chế xử lý tương ứng.\n3. Đối chiếu xem sinh viên đã cung cấp đủ thông tin cần thiết chưa.\n\nEMAIL CỦA SV:\n"..."')}
+    ${code('PROMPT · Soạn thư nháp an toàn','<span class="c"># Quy định soạn email</span>\nSoạn thư trả lời sinh viên dựa trên thông tin SOP đã tìm được:\n- Điền tên, MSSV của sinh viên.\n- Sử dụng template email phản hồi chuẩn của phòng.\n- Ghi rõ cán bộ hỗ trợ.\n\n<span class="c"># Ràng buộc xuất bản</span>\nLưu ý: Chỉ soạn nháp và đẩy vào mục Drafts trên Outlook. KHÔNG được phép gửi trực tiếp.')}
   </div>
 </div>`,
 
@@ -404,17 +620,20 @@ const slides = [
     save:'Tiết kiệm ~87% ≈ 11 giờ công/tháng',
     note:'Ước tính: cuộc họp 60–90 phút, 10 cuộc/tháng.'}})}
     <div>${acc([
-      {t:'1. Khởi tạo & Cắt nhỏ âm thanh (Real-time Slicing)',s:'NodeJS thu âm thanh và gửi từng chunk lên Gemini 3.5',b:'<ul><li>Khi cuộc họp bắt đầu, ứng dụng **NodeJS** thu âm thanh trực tiếp từ micro và tự động cắt thành các phân đoạn ngắn (từ 15-30 giây).</li><li>Ứng dụng gửi trực tiếp các chunk âm thanh này lên API **Gemini 3.5** (hỗ trợ định dạng Audio gốc) để chuyển thành văn bản (script) theo thời gian thực một cách chính xác.</li></ul>'+code('NODEJS · Gửi chunk âm thanh lên Gemini 3.5','<span class="k">const</span> { GoogleGenAI } = require(<span class="s">"@google/genai"</span>);\n<span class="k">const</span> ai = new GoogleGenAI();\n\n<span class="k">async function</span> <span class="f">transcribeChunk</span>(audioBuffer) {\n    <span class="k">const</span> response = <span class="k">await</span> ai.models.generateContent({\n        model: <span class="s">"gemini-3.5-flash"</span>,\n        contents: [\n            {\n                inlineData: {\n                    mimeType: <span class="s">"audio/mp3"</span>,\n                    data: audioBuffer.toString(<span class="s">"base64"</span>)\n                }\n            },\n            <span class="s">"Hãy chuyển đoạn âm thanh cuộc họp này thành văn bản tiếng Việt chính xác."</span>\n        ]\n    });\n    <span class="k">return</span> response.text;\n}',true)},
-      {t:'2. Tổng hợp script & Tóm tắt cuộc họp',s:'Biên tập toàn bộ transcript sau khi kết thúc họp',b:'<ul><li>Ngay khi cuộc họp kết thúc, hệ thống NodeJS sẽ ghép nối toàn bộ các đoạn transcript theo mốc thời gian.</li><li>AI tự động hiệu chỉnh chính tả theo ngữ cảnh, tóm tắt các nội dung cốt lõi và biên soạn thành biên bản họp chính thức.</li></ul>'+code('PROMPT · Tổng hợp & Biên tập biên bản','<span class="c"># Vai trò</span>\nBạn là thư ký ảo của cuộc họp tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nDựa trên bản ghi chép (transcript) cuộc họp đính kèm:\n1. Sửa lỗi chính tả & câu cú chưa gãy gọn của văn bản nói.\n2. Tóm tắt nội dung cuộc họp theo các mục thảo luận lớn.\n3. Trích xuất danh sách các quyết định quan trọng.')},
-      {t:'3. Phân công công việc & Tạo sự kiện Calendar',s:'Trích xuất Action Items và tạo lịch hẹn tự động',b:'<ul><li>AI tự động phân tích và trích xuất danh sách **Action Items**: việc cần làm, người chịu trách nhiệm, và deadline.</li><li>Đồng thời, hệ thống NodeJS sẽ kết nối API để tự động tạo lời mời sự kiện lịch (**Calendar Request**) cho những người được giao việc tương ứng.</li></ul>'+code('NODEJS · Tự động tạo sự kiện trên Calendar','<span class="k">const</span> { google } = require(<span class="s">"googleapis"</span>);\n<span class="k">const</span> calendar = google.calendar(<span class="s">"v3"</span>);\n\n<span class="k">async function</span> <span class="f">createCalendarEvent</span>(actionItem) {\n    <span class="k">const</span> event = {\n        summary: <span class="s">`[FPTU Action Item] ${actionItem.task}`</span>,\n        description: <span class="s">`Nhiệm vụ: ${actionItem.desc}`</span>,\n        start: { dateTime: actionItem.deadline },\n        attendees: [{ email: actionItem.assignee_email }]\n    };\n    <span class="k">await</span> calendar.events.insert({ calendarId: <span class="s">"primary"</span>, resource: event });\n}',true)},
-      {t:'4. Cán bộ kiểm duyệt & Gửi email tự động',s:'Bước kiểm tra cuối của chủ trì trước khi phát hành',b:'<ul><li>Biên bản họp hoàn chỉnh cùng danh sách sự kiện lịch sẽ được hiển thị trên Dashboard để người dùng (chủ trì hoặc thư ký) rà soát lại lần cuối.</li><li>Khi bấm phê duyệt, hệ thống sẽ tự động gửi email biên bản họp và gửi trực tiếp các yêu cầu họp (calendar request) cho người tham dự.</li></ul>'+shot('cowork-meeting-take-note.png','Giao diện duyệt biên bản họp và gửi email/calendar tự động')}
+      {t:'1. Khởi tạo & Cắt nhỏ âm thanh (Real-time Slicing)',s:'NodeJS thu âm thanh và gửi từng chunk lên Gemini 3.5',b:'<ul><li>Khi cuộc họp bắt đầu, ứng dụng **NodeJS** thu âm thanh trực tiếp từ micro và tự động cắt thành các phân đoạn ngắn (từ 15-30 giây).</li><li>Ứng dụng gửi trực tiếp các chunk âm thanh này lên API **Gemini 3.5** (hỗ trợ định dạng Audio gốc) để chuyển thành văn bản (script) theo thời gian thực một cách chính xác.</li></ul>'+code('NODEJS · Gửi chunk âm thanh lên Gemini 3.5','<span class="k">const</span> { GoogleGenAI } = require(<span class="s">"@google/genai"</span>);\n<span class="k">const</span> ai = new GoogleGenAI();\n\n<span class="k">async function</span> <span class="f">transcribeChunk</span>(audioBuffer) {\n    <span class="k">const</span> response = <span class="k">await</span> ai.models.generateContent({\n        model: <span class="s">"gemini-3.5-flash"</span>,\n        contents: [\n            {\n                inlineData: {\n                    mimeType: <span class="s">"audio/mp3"</span>,\n                    data: audioBuffer.toString(<span class="s">"base64"</span>)\n                }\n            },\n            <span class="s">"Hãy chuyển đoạn âm thanh cuộc họp này thành văn bản tiếng Việt chính xác."</span>\n        ]\n    });\n    <span class="k">return</span> response.text;\n}',true)+shot('media__1781170505541.png','Giao diện ghi âm cuộc họp và xử lý live transcript của web app FPTU AI Meeting Take-note')},
+      {t:'2. Tổng hợp script & Tóm tắt cuộc họp',s:'Biên tập toàn bộ transcript sau khi kết thúc họp',b:'<ul><li>Ngay khi cuộc họp kết thúc, hệ thống NodeJS sẽ ghép nối toàn bộ các đoạn transcript theo mốc thời gian.</li><li>AI tự động hiệu chỉnh chính tả theo ngữ cảnh, tóm tắt các nội dung cốt lõi và biên soạn thành biên bản họp chính thức.</li></ul>'+shot('media__1781170553097.png','Giao diện hệ thống gửi dữ liệu ghi âm và hiển thị trạng thái AI đang phân tích tóm tắt cuộc họp')},
+      {t:'3. Phân công công việc & Tạo sự kiện Calendar',s:'Trích xuất Action Items và tạo lịch hẹn tự động',b:'<ul><li>AI tự động phân tích và trích xuất danh sách **Action Items**: việc cần làm, người chịu trách nhiệm, và deadline.</li><li>Đồng thời, hệ thống NodeJS sẽ kết nối API để tự động tạo lời mời sự kiện lịch (**Calendar Request**) cho những người được giao việc tương ứng.</li></ul>'+code('NODEJS · Tự động tạo sự kiện trên Calendar','<span class="k">const</span> { google } = require(<span class="s">"googleapis"</span>);\n<span class="k">const</span> calendar = google.calendar(<span class="s">"v3"</span>);\n\n<span class="k">async function</span> <span class="f">createCalendarEvent</span>(actionItem) {\n    <span class="k">const</span> event = {\n        summary: <span class="s">`[FPTU Action Item] ${actionItem.task}`</span>,\n        description: <span class="s">`Nhiệm vụ: ${actionItem.desc}`</span>,\n        start: { dateTime: actionItem.deadline },\n        attendees: [{ email: actionItem.assignee_email }]\n    };\n    <span class="k">await</span> calendar.events.insert({ calendarId: <span class="s">"primary"</span>, resource: event });\n}',true)+shot('media__1781170258604.png','Email phân công công việc kèm file sự kiện lịch (.ics) được gửi tự động')+shot('media__1781170311882.png','Giao diện lịch sự kiện chi tiết của công việc sau khi mở file đính kèm .ics')},
+      {t:'4. Cán bộ kiểm duyệt & Gửi email tự động',s:'Bước kiểm tra cuối của chủ trì trước khi phát hành',b:'<ul><li>Biên bản họp hoàn chỉnh cùng danh sách sự kiện lịch sẽ được hiển thị trên Dashboard để người dùng (ch trì hoặc thư ký) rà soát lại lần cuối.</li><li>Khi bấm phê duyệt, hệ thống sẽ tự động gửi email biên bản họp và gửi trực tiếp các yêu cầu họp (calendar request) cho người tham dự.</li></ul>'+shot('media__1781170441590.png','Biên bản cuộc họp hoàn chỉnh được AI tự động biên soạn theo chuẩn hành chính')+shot('cowork-meeting-take-note.png','Giao diện duyệt biên bản họp và gửi email/calendar tự động')}
     ],true)}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Tổng hợp & Biên tập biên bản','<span class="c"># Vai trò</span>\nBạn là thư ký ảo của cuộc họp tại Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Nhiệm vụ</span>\nDựa trên bản ghi chép (transcript) cuộc họp đính kèm:\n1. Sửa lỗi chính tả & câu cú chưa gãy gọn của văn bản nói.\n2. Tóm tắt nội dung cuộc họp theo các mục thảo luận lớn.\n3. Trích xuất danh sách các quyết định quan trọng.')}
   </div>
 </div>`,
 
 /* 9 CASE 2.2 EXAM */
 `<div class="wrap">
-  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Case 2.2 · Nhắc lịch coi thi — Phòng Khảo thí</div><h2>Không cán bộ nào <span class="grad-o">quên ca coi thi</span></h2></div>
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Case 2.2 · Nhắc lịch coi thi — Phòng Khảo thí</div><h2>Nhắc lịch <span class="grad-o">coi thi</span></h2></div>
   <div class="caserow reveal">
     ${spec({ic:'📅',or:true,lead:'Một công cụ Python tự xây (vibecode): đọc bảng phân công (Excel) để gửi email lịch coi thi chi tiết dạng bảng, đồng thời gửi tin nhắn Zalo Bot nhắc lịch trước ngày thi cho từng cán bộ.',m:[['Python','Đọc Excel + gửi mail & Zalo'],['Zalo Bot','Nhắc trước 1 ngày']],tags:['Antigravity / Codex','Python','Zalo Bot API'],
     cmp:{rows:[['Mỗi đợt thi','2–3 giờ soạn & gửi từng người','Tự chạy, có log đầy đủ'],['Rủi ro sót ca','Phụ thuộc người gửi tay','Email + Zalo nhắc trước 1 ngày']],
@@ -422,10 +641,13 @@ const slides = [
     note:'Ước tính cho đợt thi ~30–50 giám thị; giá trị chính là độ tin cậy, không chỉ giờ công.'}})}
     <div>${acc([
       {t:'Chuẩn hoá bảng phân công',s:'Excel: tên, email, SĐT, ngày, ca, phòng, giờ, nhiệm vụ',b:'<ul><li>Đảm bảo file phân công có các cột rõ ràng: <code>Họ tên · Email · SĐT · Ngày · Thứ · Ca thi · Môn · Phòng · Nhiệm vụ</code>. SĐT dùng để gửi tin nhắn Zalo Bot nhắc nhở trước ngày gác thi.</li></ul>'},
-      {t:'Vibecode công cụ Python & Zalo Bot',s:'Mô tả → AI sinh mã Python hoàn chỉnh gửi Mail + Zalo',b:'<ul><li>Dán yêu cầu vào Antigravity/Codex — agent sinh ra <b>project Python đầy đủ</b> (mã nguồn + requirements + README) hỗ trợ gửi email HTML lịch thi dạng bảng và Zalo Bot API nhắc lịch trước ngày thi 1 ngày.</li></ul>'+shot('fptu-exam-email.png','Mẫu email lịch gác thi gửi cán bộ')+shot('fptu-zalo-bot.png','Giao diện tin nhắn Zalo Bot nhắc lịch gác thi')+code('PROMPT · Vibecode công cụ nhắc lịch thi & Zalo Bot','Viết công cụ Python tên "fptu_exam_reminder".\n1. Đọc file Excel phân công gác thi bằng pandas (cột: Họ tên, Email, SĐT, Ngày, Thứ, Ca thi, Môn, Phòng, Nhiệm vụ).\n2. Gửi email thông báo lịch gác thi HTML dạng bảng chuyên nghiệp (chứa đủ thông tin Ngày, Ca thi, Phòng, Nhiệm vụ) qua SMTP.\n3. Kết nối Zalo Bot API: tự động gửi tin nhắn Zalo nhắc lịch gác thi trước ngày gác thi 1 ngày cho từng cán bộ theo SĐT.\n4. Ghi log lịch sử gửi vào reminders_sent.csv.\nSinh kèm requirements.txt, README, .env mẫu (SMTP, ZALO_BOT_TOKEN). Chú thích tiếng Việt.',true)+code('PYTHON · Code mẫu gửi Email HTML & Zalo Bot','<span class="k">import</span> requests, smtplib\n<span class="k">from</span> email.mime.multipart <span class="k">import</span> MIMEMultipart\n<span class="k">from</span> email.mime.text <span class="k">import</span> MIMEText\n\n<span class="c"># 1. Gửi Email HTML thông báo lịch gác thi</span>\n<span class="k">def</span> <span class="f">send_email</span>(to_email, html_content):\n    msg = MIMEMultipart()\n    msg[<span class="s">"Subject"</span>] = <span class="s">"[Phòng Khảo thí FPTU CT] Mời coi thi"</span>\n    msg.attach(MIMEText(html_content, <span class="s">"html"</span>))\n    <span class="c"># Kết nối SMTP gửi thư...</span>\n\n<span class="c"># 2. Gửi Zalo Bot API nhắc trước 1 ngày</span>\n<span class="k">def</span> <span class="f">send_zalo_message</span>(phone, text):\n    url = <span class="s">"https://openapi.zalo.me/v2.0/oa/message"</span>\n    headers = {<span class="s">"access_token"</span>: <span class="s">"ZALO_BOT_TOKEN"</span>}\n    payload = {\n        <span class="s">"recipient"</span>: {<span class="s">"phone"</span>: phone},\n        <span class="s">"message"</span>: {<span class="s">"text"</span>: text}\n    }\n    requests.post(url, json=payload, headers=headers)',true)},
-      {t:'Cài & đặt lịch chạy tự động',s:'cron / Task Scheduler — quét & gửi mỗi ngày',b:'<ul><li>Cài và chạy thử, rồi đặt lịch để công cụ tự chạy hằng ngày.</li></ul>'+code('Terminal','pip install -r requirements.txt\npython exam_reminder.py phancong.xlsx\n\n<span class="c"># macOS/Linux: chạy mỗi ngày 17h (crontab -e)</span>\n0 17 * * *  python /duong-dan/exam_reminder.py phancong.xlsx\n<span class="c"># Windows: dùng Task Scheduler tạo tác vụ tương tự</span>',true)},
-      {t:'Theo dõi & báo cáo',s:'Log đã gửi, cảnh báo ca thiếu người',b:'<ul><li>Sau mỗi lần chạy, công cụ ghi log <code>reminders_sent.csv</code>: <b>đã gửi Email / gửi Zalo / lỗi / ca chưa có giám thị.</b> Phòng Khảo thí nhận cảnh báo sớm để bổ sung nhân sự.</li></ul><div class="note">Công cụ chỉ đọc & gửi nhắc — không tự thay đổi file phân công gốc.</div>'}
+      {t:'Vibecode công cụ Python & Zalo Bot',s:'Mô tả → AI sinh mã Python hoàn chỉnh gửi Mail + Zalo',b:'<ul><li>Dán yêu cầu vào Antigravity/Codex — agent sinh ra <b>project Python đầy đủ</b> (mã nguồn + requirements + README) hỗ trợ gửi email HTML lịch thi dạng bảng và Zalo Bot API nhắc lịch trước ngày thi 1 ngày.</li></ul>'+shot('fptu-exam-email.png','Mẫu email lịch gác thi gửi cán bộ')+shot('fptu-zalo-bot.png','Giao diện tin nhắn Zalo Bot nhắc lịch gác thi')+code('PYTHON · Code mẫu gửi Email HTML & Zalo Bot','<span class="k">import</span> requests, smtplib\n<span class="k">from</span> email.mime.multipart <span class="k">import</span> MIMEMultipart\n<span class="k">from</span> email.mime.text <span class="k">import</span> MIMEText\n\n<span class="c"># 1. Gửi Email HTML thông báo lịch gác thi</span>\n<span class="k">def</span> <span class="f">send_email</span>(to_email, html_content):\n    msg = MIMEMultipart()\n    msg[<span class="s">"Subject"</span>] = <span class="s">"[Phòng Khảo thí FPTU CT] Mời coi thi"</span>\n    msg.attach(MIMEText(html_content, <span class="s">"html"</span>))\n    <span class="c"># Kết nối SMTP gửi thư...</span>\n\n<span class="c"># 2. Gửi Zalo Bot API nhắc trước 1 ngày</span>\n<span class="k">def</span> <span class="f">send_zalo_message</span>(phone, text):\n    url = <span class="s">"https://openapi.zalo.me/v2.0/oa/message"</span>\n    headers = {<span class="s">"access_token"</span>: <span class="s">"ZALO_BOT_TOKEN"</span>}\n    payload = {\n        <span class="s">"recipient"</span>: {<span class="s">"phone"</span>: phone},\n        <span class="s">"message"</span>: {<span class="s">"text"</span>: text}\n    }\n    requests.post(url, json=payload, headers=headers)',true)},
+      {t:'Cài & đặt lịch chạy tự động',s:'cron / Task Scheduler — quét & gửi mỗi ngày',b:'<ul><li>Cài và chạy thử, rồi đặt lịch để công cụ tự chạy hằng ngày.</li></ul>'+shot('media__1781152092343.png','Giao diện cấu hình tự động gửi tin nhắn Zalo nhắc lịch gác thi')+code('Terminal','pip install -r requirements.txt\npython exam_reminder.py phancong.xlsx\n\n<span class="c"># macOS/Linux: chạy mỗi ngày 17h (crontab -e)</span>\n0 17 * * *  python /duong-dan/exam_reminder.py phancong.xlsx\n<span class="c"># Windows: dùng Task Scheduler tạo tác vụ tương tự</span>',true)},
+      {t:'Theo dõi & báo cáo',s:'Log đã gửi, cảnh báo ca thiếu người',b:'<ul><li>Sau mỗi lần chạy, công cụ ghi log <code>reminders_sent.csv</code>: <b>đã gửi Email / gửi Zalo / lỗi / ca chưa có giám thị.</b> Phòng Khảo thí nhận cảnh báo sớm để bổ sung nhân sự.</li></ul>'+shot('media__1781152240911.png','Giao diện lịch sử gửi nhắc lịch gác thi (Zalo & Email)')+'<div class="note">Công cụ chỉ đọc & gửi nhắc — không tự thay đổi file phân công gốc.</div>'}
     ],true)}</div>
+  </div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Vibecode công cụ nhắc lịch thi & Zalo Bot','Viết công cụ Python tên "fptu_exam_reminder".\n1. Đọc file Excel phân công gác thi bằng pandas (cột: Họ tên, Email, SĐT, Ngày, Ca thi, Môn, Phòng, Nhiệm vụ).\n2. Gửi email thông báo lịch gác thi HTML dạng bảng chuyên nghiệp (chứa đủ thông tin Ngày, Ca thi, Phòng, Nhiệm vụ) qua SMTP.\n3. Kết nối Zalo Bot API: tự động gửi tin nhắn Zalo nhắc lịch gác thi trước ngày gác thi 1 ngày cho từng cán bộ theo SĐT.\n4. Ghi log lịch sử gửi vào reminders_sent.csv.\nSinh kèm requirements.txt, README, .env mẫu (SMTP, ZALO_BOT_TOKEN). Chú thích tiếng Việt.',true)}
   </div>
 </div>`,
 
@@ -476,9 +698,12 @@ const slides = [
   <p class="lead reveal">Một prompt rõ ràng cho kết quả ổn định. Bấm để xem giải thích & ví dụ.</p>
   <div class="reveal">${acc([
     {t:'Công thức 6 phần',s:'Vai trò · Bối cảnh · Nhiệm vụ · Quy tắc · Đầu ra · Giới hạn',b:'<ul><li><b>Vai trò:</b> "Bạn là trợ lý… của Trường ĐH FPT Cần Thơ."</li><li><b>Bối cảnh:</b> tình huống, dữ liệu agent sẽ gặp.</li><li><b>Nhiệm vụ:</b> liệt kê việc cần làm, đánh số.</li><li><b>Quy tắc:</b> các tình huống đặc biệt, điều cần tránh.</li><li><b>Đầu ra:</b> định dạng mong muốn (bảng, file Word…).</li><li><b>Giới hạn:</b> AI được/không được làm gì — luôn có dòng "chờ tôi duyệt".</li></ul>'},
-    {t:'Mẫu prompt rút gọn — dùng ngay',s:'Sao chép & thay phần in hoa',b:code('PROMPT · Khung dùng chung','<span class="c"># Vai trò</span>\nBạn là [VAI TRÒ] của Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Bối cảnh</span>\n[MÔ TẢ TÌNH HUỐNG / DỮ LIỆU]\n\n<span class="c"># Nhiệm vụ</span>\n1. [VIỆC 1]\n2. [VIỆC 2]\n\n<span class="c"># Quy tắc</span>\n- [TRƯỜNG HỢP ĐẶC BIỆT]\n- Nếu không chắc → hỏi lại, đừng đoán.\n\n<span class="c"># Đầu ra</span>\n[ĐỊNH DẠNG: bảng / file Word / email…]\n\n<span class="c"># Giới hạn</span>\nChỉ [PHẠM VI CHO PHÉP]. Chờ tôi duyệt trước khi gửi/xoá/thay đổi.')},
+    {t:'Mẫu prompt rút gọn — dùng ngay',s:'Sao chép & thay phần in hoa',b:'<ul><li>Sử dụng mẫu prompt khung dưới đây để bắt đầu nhanh cho hầu hết các tác vụ tự động hóa văn phòng.</li></ul>'},
     {t:'Mẹo tinh chỉnh',s:'Khi kết quả chưa đúng ý',b:'<ul><li>Thêm <b>ví dụ mẫu</b> (1 đầu vào → 1 đầu ra đúng) — cải thiện rất nhiều.</li><li>Agent làm sai một kiểu → thêm đúng <b>một dòng quy tắc</b> cho kiểu đó, đừng viết lại cả prompt.</li><li>Yêu cầu agent <b>giải thích vì sao</b> nó làm vậy để phát hiện hiểu nhầm.</li><li>Lưu prompt tốt thành <b>thư viện dùng chung</b> cho phòng.</li></ul>'}
   ])}</div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Khung dùng chung','<span class="c"># Vai trò</span>\nBạn là [VAI TRÒ] của Trường ĐH FPT Cần Thơ.\n\n<span class="c"># Bối cảnh</span>\n[MÔ TẢ TÌNH HUỐNG / DỮ LIỆU]\n\n<span class="c"># Nhiệm vụ</span>\n1. [VIỆC 1]\n2. [VIỆC 2]\n\n<span class="c"># Quy tắc</span>\n- [TRƯỜNG HỢP ĐẶC BIỆT]\n- Nếu không chắc → hỏi lại, đừng đoán.\n\n<span class="c"># Đầu ra</span>\n[ĐỊNH DẠNG: bảng / file Word / email…]\n\n<span class="c"># Giới hạn</span>\nChỉ [PHẠM VI CHO PHÉP]. Chờ tôi duyệt trước khi gửi/xoá/thay đổi.')}
+  </div>
 </div>`,
 
 /* 13 GUIDE 2: anatomy of a skill */
@@ -510,8 +735,11 @@ const slides = [
     {t:'Khi nào tự code thay vì làm skill',s:'Ranh giới giữa Hướng 1 và Hướng 2',b:'<ul><li>Cần xử lý <b>logic phức tạp</b>, dữ liệu lớn, hoặc tích hợp API/hệ thống.</li><li>Cần công cụ <b>chạy độc lập</b> (trên máy/server), không phụ thuộc Cowork.</li><li>Cần đóng gói cho <b>nhiều người dùng</b> hoặc chạy định kỳ tự động.</li></ul><div class="note">Việc lặp lại ngay trong Cowork → dùng skill (Hướng 1). Cần "phần mềm" thật → vibecode (Hướng 2).</div>'},
     {t:'Quy trình vibecode 4 bước',s:'Mô tả → sinh code → chạy → đóng gói',b:'<ul><li><b>1. Mô tả yêu cầu:</b> đầu vào/ra, thư viện gợi ý, ràng buộc.</li><li><b>2. AI sinh project:</b> mã nguồn + requirements.txt + README.</li><li><b>3. Chạy thử:</b> <code>pip install -r requirements.txt</code> rồi <code>python main.py</code>; báo lỗi cho agent sửa.</li><li><b>4. Đóng gói:</b> lên lịch (cron / Task Scheduler), lưu vào kho chung.</li></ul>'},
     {t:'Cấu trúc project & cách chạy',s:'Một dự án Python điển hình',b:code('Cấu trúc + lệnh chạy','<span class="c"># cấu trúc thư mục</span>\nfptu_exam_reminder/\n├── exam_reminder.py      <span class="c"># mã chính</span>\n├── requirements.txt      <span class="c"># openpyxl, pandas, python-dotenv</span>\n├── .env                  <span class="c"># SMTP_USER, SMTP_PASS</span>\n└── README.md             <span class="c"># hướng dẫn chạy</span>\n\n<span class="c"># cài & chạy</span>\npip install -r requirements.txt\npython exam_reminder.py phancong.xlsx',true)},
-    {t:'Prompt vibecode dùng chung',s:'Sao chép & thay phần trong ngoặc',b:code('PROMPT · Khung vibecode','Viết cho tôi một công cụ [Python / Node] tên "[tên_công_cụ]".\nChức năng:\n1. [bước 1]\n2. [bước 2]\n3. [bước 3]\nĐầu vào: [...]   ·   Đầu ra: [...]\nThư viện gợi ý: [...]\nSinh đầy đủ: mã nguồn, requirements.txt (hoặc package.json),\nREADME hướng dẫn chạy, file .env mẫu cho thông tin nhạy cảm.\nCode rõ ràng, có chú thích tiếng Việt, xử lý lỗi cơ bản.',true)}
+    {t:'Prompt vibecode dùng chung',s:'Sao chép & thay phần trong ngoặc',b:'<ul><li>Sử dụng khung prompt dưới đây khi làm việc với Antigravity hoặc Codex để sinh mã nguồn Python/npm hoàn chỉnh.</li></ul>'}
   ],true)}</div>
+  <div class="reveal" style="margin-top:24px">
+    ${code('PROMPT · Khung vibecode','Viết cho tôi một công cụ [Python / Node] tên "[tên_công_cụ]".\nChức năng:\n1. [bước 1]\n2. [bước 2]\n3. [bước 3]\nĐầu vào: [...]   ·   Đầu ra: [...]\nThư viện gợi ý: [...]\nSinh đầy đủ: mã nguồn, requirements.txt (hoặc package.json),\nREADME hướng dẫn chạy, file .env mẫu cho thông tin nhạy cảm.\nCode rõ ràng, có chú thích tiếng Việt, xử lý lỗi cơ bản.',true)}
+  </div>
 </div>`,
 
 /* 16 GUIDE 3: edit & operate */
@@ -592,9 +820,11 @@ const TOC=[
 const deck=document.getElementById('deck'),dotsBox=document.getElementById('dots'),tocBox=document.getElementById('toc');
 slides.forEach((html,i)=>{
   const s=document.createElement('section');
-  s.className='slide'+(i===0?' active':'')+(html.indexOf('class="shead"')>-1?' doc':'');
   s.tabIndex = -1;
-  s.innerHTML=html;deck.appendChild(s);
+  s.innerHTML=html;
+  deck.appendChild(s);
+  const hasShead = s.querySelector('.shead') !== null;
+  s.className='slide'+(i===0?' active':'')+(hasShead?' doc':' center');
   const d=document.createElement('div');d.className='d'+(i===0?' on':'');d.addEventListener('click',()=>go(i));dotsBox.appendChild(d);
 });
 // build TOC
