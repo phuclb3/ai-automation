@@ -911,6 +911,96 @@ const slides = [
   </div>
 </div>`,
 
+/* STEP 1 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Sơ đồ 6 bước · Bước ①</div><h2>Xác định <span class="grad">bài toán</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec"><div class="spec-ic">①</div><p class="lead">Chọn đúng việc để tự động hoá — nền móng của cả quy trình. Việc tốt nhất: lặp lại thường xuyên, quy tắc rõ, kết quả dễ kiểm tra.</p>
+      <div class="pillrow"><span class="pill small">Đầu ra: bản mô tả bài toán</span><span class="pill small">Danh sách rủi ro</span></div></div>
+    <div><ul class="clean">
+      <li><b>Tiêu chí chọn việc:</b> lặp lại ≥ 1 lần/tuần · có quy tắc mô tả được bằng lời · sai sót chấp nhận được khi có người duyệt.</li>
+      <li><b>Viết đủ 3 dòng:</b> đầu vào (email? file Excel? ghi âm?) → đầu ra (bảng, bản nháp, file .docx?) → ràng buộc (ai duyệt, hạn chót, giọng văn).</li>
+      <li><b>Liệt kê rủi ro:</b> dữ liệu nhạy cảm nào liên quan (thông tin SV, điểm số), hậu quả nếu AI làm sai, ai chịu trách nhiệm cuối.</li>
+      <li><b>Ví dụ tại trường:</b> phản hồi email DVSV — lặp mỗi ngày ~20 lượt, có bộ mẫu trả lời sẵn, cán bộ duyệt trước khi gửi → bài toán lý tưởng.</li>
+    </ul><div class="note">Việc không nên chọn lúc đầu: quyết định nhân sự, xét điểm, kỷ luật — rủi ro cao, quy tắc mờ.</div></div>
+  </div>
+</div>`,
+
+/* STEP 2 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Sơ đồ 6 bước · Bước ②</div><h2>Chọn <span class="grad">hướng & công cụ</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec"><div class="spec-ic">②</div><p class="lead">Một câu hỏi quyết định: việc này cần "trợ lý văn phòng" hay cần "một phần mềm riêng"?</p>
+      <div class="pillrow"><span class="pill small">Đầu ra: chọn Hướng 1 / Hướng 2</span><span class="pill small">Công cụ cụ thể</span></div></div>
+    <div><ul class="clean">
+      <li><b>Hướng 1 — Claude Cowork:</b> việc văn phòng gắn với email, file, lịch, văn bản; không cần lập trình. Làm bằng <b>prompt</b>, đóng gói thành <b>skill</b>, chạy theo lịch bằng <b>scheduled task</b>.</li>
+      <li><b>Hướng 2 — Vibecode (Antigravity / Codex):</b> cần công cụ <b>chạy độc lập</b> trên máy/server, logic phức tạp, tích hợp API (Zalo Bot, Gemini Audio…), nhiều người dùng chung.</li>
+      <li><b>Tiêu chí nhanh:</b> chỉ mình dùng, dữ liệu trong tầm tay → Hướng 1. Cả phòng dùng, chạy nền hằng ngày, xử lý file lớn → Hướng 2.</li>
+      <li><b>Ví dụ tại trường:</b> lọc email, email DVSV → Cowork · nhắc coi thi (Python + Zalo), biên bản họp (NodeJS) → vibecode.</li>
+    </ul><div class="note">Phân vân thì bắt đầu Hướng 1 — thử nhanh trong 30 phút; cần hơn mới chuyển Hướng 2.</div></div>
+  </div>
+</div>`,
+
+/* STEP 3 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker"><span class="dot"></span>Sơ đồ 6 bước · Bước ③</div><h2>Chuẩn bị <span class="grad">dữ liệu & quyền</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec"><div class="spec-ic">③</div><p class="lead">AI chỉ tốt bằng dữ liệu nó được cấp. Chuẩn bị kỹ ở bước này giảm một nửa lỗi ở các bước sau.</p>
+      <div class="pillrow"><span class="pill small">Quyền truy cập</span><span class="pill small">Template / SOP</span><span class="pill small">Bộ dữ liệu vàng</span></div></div>
+    <div><ul class="clean">
+      <li><b>Cấp quyền:</b> kết nối Gmail/Outlook trong Cowork (Customize → Connectors), chọn (mount) thư mục chứa file cần xử lý.</li>
+      <li><b>Gom tài liệu chuẩn:</b> mẫu email, mẫu biên bản, SOP nghiệp vụ, danh sách nhãn phân loại — AI bám vào đây thay vì tự bịa.</li>
+      <li><b>Chuẩn hoá bảng tính:</b> tên cột rõ ràng (<code>Họ tên · Email · Ngày · Ca · Phòng</code>), một dòng một bản ghi, không gộp ô.</li>
+      <li><b>Soạn bộ "dữ liệu vàng":</b> 10–20 ví dụ kèm đáp án đúng (vd: 15 email đã gắn nhãn chuẩn) — dùng để chấm điểm AI ở bước ⑤.</li>
+    </ul><div class="note">Dữ liệu nhạy cảm (thông tin SV, điểm) chỉ đưa vào công cụ đã được trường phê duyệt.</div></div>
+  </div>
+</div>`,
+
+/* STEP 4 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Sơ đồ 6 bước · Bước ④</div><h2>Xây & <span class="grad-o">chạy thử</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec or"><div class="spec-ic">④</div><p class="lead">Biến mô tả thành thứ chạy được: prompt/skill (Hướng 1) hoặc project code (Hướng 2), rồi thử ngay trên dữ liệu thật.</p>
+      <div class="pillrow"><span class="pill small">Prompt / skill chạy được</span><span class="pill small">hoặc project Python/NodeJS</span></div></div>
+    <div><ul class="clean">
+      <li><b>Hướng 1:</b> viết prompt theo <b>công thức 6 phần</b> (Vai trò · Bối cảnh · Nhiệm vụ · Quy tắc · Đầu ra · Giới hạn) → chạy thử trong Cowork → việc dùng lặp lại thì đóng gói thành <b>skill</b>.</li>
+      <li><b>Hướng 2:</b> dán yêu cầu vào Antigravity/Codex → AI sinh project đầy đủ → <code>pip install -r requirements.txt</code> → chạy với một file thật.</li>
+      <li><b>Sửa lặp ngắn:</b> chạy → xem kết quả → sai kiểu nào thêm đúng một quy tắc cho kiểu đó (đừng viết lại cả prompt) → chạy lại.</li>
+      <li><b>Luôn có dòng giới hạn:</b> "Chỉ tạo nháp/đề xuất. Chờ tôi duyệt trước khi gửi/xoá/thay đổi."</li>
+    </ul><div class="note">Chi tiết ở 2 slide sau: "Viết prompt tốt theo 6 phần" và "Mở rộng Cowork bằng skill".</div></div>
+  </div>
+</div>`,
+
+/* STEP 5 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Sơ đồ 6 bước · Bước ⑤</div><h2>Kiểm định & <span class="grad-o">người duyệt</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec or"><div class="spec-ic">⑤</div><p class="lead">Khoảng cách giữa "demo ấn tượng" và "dùng thật được" nằm ở bước này: đo độ chính xác và giữ người trong vòng quyết định.</p>
+      <div class="pillrow"><span class="pill small">Báo cáo độ chính xác</span><span class="pill small">Quy tắc bổ sung</span></div></div>
+    <div><ul class="clean">
+      <li><b>Chấm điểm bằng bộ dữ liệu vàng:</b> cho AI chạy trên 10–20 mẫu có đáp án (chuẩn bị ở bước ③), đếm đúng/sai từng loại.</li>
+      <li><b>Giữ mức ủy quyền thấp:</b> giai đoạn đầu AI chỉ <b>quan sát → nháp → đề xuất</b> (L0–L2); người duyệt 100% đầu ra.</li>
+      <li><b>Mỗi lỗi thành một quy tắc:</b> ghi lại các ca sai, bổ sung vào phần Quy tắc của prompt/skill, chạy lại bộ dữ liệu vàng để chắc không hỏng ca cũ.</li>
+      <li><b>Ngưỡng để đi tiếp:</b> ổn định vài tuần, tỉ lệ sai thấp và không có lỗi nghiêm trọng → mới chuyển sang vận hành tự động ở bước ⑥.</li>
+    </ul><div class="note">Chi tiết ở các slide sau: "Tinh chỉnh & chạy an toàn" và "Sáu cấp ủy quyền L0–L5".</div></div>
+  </div>
+</div>`,
+
+/* STEP 6 */
+`<div class="wrap">
+  <div class="shead reveal"><div class="kicker p3"><span class="dot"></span>Sơ đồ 6 bước · Bước ⑥</div><h2>Vận hành & <span class="grad-o">theo dõi</span></h2></div>
+  <div class="caserow reveal">
+    <div class="spec or"><div class="spec-ic">⑥</div><p class="lead">Cho flow chạy tự động theo lịch — nhưng luôn nhìn thấy nó đang làm gì và dừng được bất cứ lúc nào.</p>
+      <div class="pillrow"><span class="pill small">Lịch chạy tự động</span><span class="pill small">Log đầy đủ</span><span class="pill small">Số liệu hiệu quả</span></div></div>
+    <div><ul class="clean">
+      <li><b>Đặt lịch:</b> Scheduled task trong Cowork (vd: bản tin AI 8:00 sáng) hoặc cron / Task Scheduler cho công cụ Python (vd: nhắc coi thi 17:00).</li>
+      <li><b>Ghi log mỗi lần chạy:</b> đã làm gì, gửi cho ai, lỗi gì (vd: <code>reminders_sent.csv</code>) — có vấn đề là truy lại được ngay.</li>
+      <li><b>Cảnh báo & dừng:</b> lỗi lặp lại hoặc dữ liệu bất thường → flow phải báo người phụ trách và dừng được một nút.</li>
+      <li><b>Đo hiệu quả thật:</b> sau 2–4 tuần, thống kê giờ công tiết kiệm so với ước tính (slide "Tự động hoá tiết kiệm được gì?") để quyết định nhân rộng.</li>
+    </ul><div class="note">Nền tảng kỹ thuật của bước này: slide "Harness — khung bao quanh AI".</div></div>
+  </div>
+</div>`,
+
 /* 12 GUIDE 1: prompt formula */
 `<div class="wrap">
   <div class="shead reveal"><div class="kicker"><span class="dot"></span>Hướng dẫn ① · Công thức prompt</div><h2>Viết prompt tốt theo <span class="grad">6 phần</span></h2></div>
@@ -936,16 +1026,7 @@ const slides = [
 
 
 
-/* 16 GUIDE 3: edit & operate */
-`<div class="wrap">
-  <div class="shead reveal"><div class="kicker p2"><span class="dot"></span>Hướng dẫn ③ · Chỉnh sửa & vận hành</div><h2>Tinh chỉnh & chạy <span class="grad">an toàn</span></h2></div>
-  <div class="reveal">${acc([
-    {t:'Chỉnh sửa prompt / skill / công cụ',s:'Sửa nhỏ, thử lại ngay',b:'<ul><li>Thay đổi nhỏ một lần, chạy thử ngay, so sánh kết quả trước/sau.</li><li>Viết rõ phần <b>Quy tắc</b> và <b>Giới hạn</b> để giảm sai sót.</li><li>Skill: sửa <code>SKILL.md</code>; prompt: lưu bản tốt vào thư viện; công cụ Python: nhờ agent sửa code rồi chạy lại.</li></ul>'},
-    {t:'Kiểm định kết quả',s:'Bộ "dữ liệu vàng" để thử lại',b:'<ul><li>Chuẩn bị 10–20 ví dụ có <b>đáp án đúng</b> (vd: 15 email kèm nhãn đúng).</li><li>Sau mỗi lần sửa, cho agent chạy lại bộ này để chắc chắn không làm hỏng kết quả cũ.</li></ul>'},
-    {t:'Bắt đầu nhỏ, nâng dần quyền',s:'Từ "đề xuất" đến "tự chạy"',b:'<ul><li>Giai đoạn đầu: AI chỉ <b>đề xuất / tạo nháp</b>, người duyệt mọi thứ.</li><li>Khi đã tin (có log, ít lỗi): mới cho phép AI <b>tự thực thi</b> việc rủi ro thấp.</li><li>Việc rủi ro cao (gửi loạt, thay đổi dữ liệu) luôn cần người duyệt.</li></ul>'},
-    {t:'Theo dõi & hàng rào an toàn',s:'Log, dừng được, không mở link lạ',b:'<ul><li>Theo dõi: số lần chạy, lỗi, thời gian, ai gửi cho ai (log).</li><li>Mỗi flow cần: giới hạn quyền rõ, người duyệt cho việc quan trọng, khả năng <b>dừng / hoàn tác</b>.</li><li>Tuyệt đối <b>không mở link lạ</b> trong email/văn bản để tránh lừa đảo.</li></ul>'}
-  ])}</div>
-</div>`,
+
 
 /* 17 HARNESS */
 `<div class="wrap">
@@ -1040,8 +1121,9 @@ const TOC=[
   {g:'Mở đầu',items:[[0,'Trang bìa'],[1,'Hai hướng tự động hoá'],[2,'AI Agents có thể làm gì']]},
   {g:'Phần 1 — Công cụ có sẵn & Skill',items:[[3,'Giới thiệu Phần 1'],[4,'1.1 · Lọc & phân loại email'],[5,'1.2 · Tổ chức sự kiện'],[6,'1.3 · Bản tin AI'],[7,'1.4 · Email phòng DVSV']]},
   {g:'Phần 2 — Tự xây công cụ (Vibecode)',items:[[8,'Giới thiệu Phần 2'],[9,'2.1 · Biên bản họp'],[10,'2.2 · Nhắc lịch coi thi'],[11,'Hiệu quả: thủ công vs AI']]},
-  {g:'Hướng dẫn chi tiết',items:[[12,'Giới thiệu hướng dẫn'],[13,'Sơ đồ quy trình xây dựng'],[14,'① Công thức prompt'],[15,'① Tạo skill cho Cowork'],[16,'② Chỉnh sửa & vận hành'],[17,'Harness — khung kỹ thuật'],[18,'Phân quyền AI (L0–L5)']]},
-  {g:'Kết',items:[[19,'Các chú ý khi triển khai'],[20,'③ Thực hành: Tạo Skill Antigravity'],[21,'Cảm ơn & hỏi đáp']]}
+  {g:'Quy trình 6 bước',items:[[12,'Giới thiệu hướng dẫn'],[13,'Sơ đồ quy trình xây dựng'],[14,'Bước ① · Xác định bài toán'],[15,'Bước ② · Chọn hướng & công cụ'],[16,'Bước ③ · Chuẩn bị dữ liệu'],[17,'Bước ④ · Xây & chạy thử'],[18,'Bước ⑤ · Kiểm định & duyệt'],[19,'Bước ⑥ · Vận hành & theo dõi']]},
+  {g:'Hướng dẫn chuyên sâu',items:[[20,'① Công thức prompt'],[21,'① Tạo skill cho Cowork'],[22,'② Chỉnh sửa & vận hành'],[23,'Harness — khung kỹ thuật'],[24,'Phân quyền AI (L0–L5)']]},
+  {g:'Kết',items:[[25,'Các chú ý khi triển khai'],[26,'③ Thực hành: Tạo Skill Antigravity'],[27,'Cảm ơn & hỏi đáp']]}
 ];
 
 /* ============ BUILD ============ */
